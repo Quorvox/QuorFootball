@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 210" role="img" aria-label="Куда бить по мячу: по центру мяч летит ровно, ниже центра вверх, выше центра в землю">
+  <circle cx="90" cy="105" r="72" fill="var(--panel)" stroke="currentColor" stroke-width="3"/>
+  <path d="M30 105 H150" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5"/>
+  <g stroke="currentColor" stroke-width="2" fill="var(--accent)">
+    <circle cx="90" cy="105" r="9"/>
+    <circle cx="90" cy="150" r="9"/>
+    <circle cx="90" cy="58" r="9"/>
+  </g>
+  <g fill="currentColor" font-size="12" font-weight="700" text-anchor="middle">
+    <text x="90" y="109">1</text>
+    <text x="90" y="154">2</text>
+    <text x="90" y="62">3</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <path d="M100 105 H196"/>
+    <path d="M100 150 L196 170"/>
+    <path d="M100 58 L196 38"/>
+  </g>
+  <g fill="currentColor" font-size="13" font-weight="600">
+    <text x="204" y="102">1. По центру: мяч летит ровно</text>
+    <text x="204" y="119" font-weight="400" font-size="12">сильный прямой удар</text>
+    <text x="204" y="174">2. Ниже центра: мяч идёт вверх</text>
+    <text x="204" y="191" font-weight="400" font-size="12">навес, но теряется сила</text>
+    <text x="204" y="42">3. Выше центра: мяч в землю</text>
+    <text x="204" y="59" font-weight="400" font-size="12">удар прижимает мяч к газону</text>
+  </g>
+</svg>

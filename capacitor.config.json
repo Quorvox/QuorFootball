@@ -1,0 +1,18 @@
+{
+  "appId": "com.quorvox.quorfootball",
+  "appName": "QuorFootball",
+  "webDir": "www",
+  "backgroundColor": "#0d120f",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_qf",
+      "iconColor": "#C6F03C"
+    }
+  }
+}

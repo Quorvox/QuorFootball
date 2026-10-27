@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- маленький значок уведомления: центр поля, только белый контур (Android красит сам) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:pathData="M12,3 A9,9 0 1,0 12.01,3 M12,3 L12,21 M3,12 L21,12" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,9.5 A2.5,2.5 0 1,0 12.01,9.5 Z" />
+</vector>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 250" role="img" aria-label="Отжимание сбоку: верно тело как доска; ошибки: таз провисает и таз торчит вверх">
+  <g stroke="currentColor" stroke-width="2" opacity="0.5">
+    <path d="M10 70 H280 M10 150 H280 M10 230 H280"/>
+  </g>
+  <g stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- верно -->
+    <circle cx="48" cy="38" r="9" fill="var(--panel)"/>
+    <path d="M62 46 L250 64"/>
+    <path d="M78 48 L78 70"/>
+    <path d="M250 64 L262 70"/>
+    <!-- провисает -->
+    <circle cx="48" cy="118" r="9" fill="var(--panel)"/>
+    <path d="M62 126 C130 140 170 154 250 144"/>
+    <path d="M78 128 L78 150"/>
+    <path d="M250 144 L262 150"/>
+    <!-- таз вверх -->
+    <circle cx="48" cy="198" r="9" fill="var(--panel)"/>
+    <path d="M62 206 L150 186 L250 224"/>
+    <path d="M78 208 L78 230"/>
+    <path d="M250 224 L262 230"/>
+  </g>
+  <g stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M300 40 L312 54 L336 26" stroke="var(--ok)"/>
+    <path d="M304 108 L328 132 M328 108 L304 132" stroke="var(--red)"/>
+    <path d="M304 188 L328 212 M328 188 L304 212" stroke="var(--red)"/>
+  </g>
+  <g fill="currentColor" font-size="13" font-weight="600">
+    <text x="345" y="46">Верно</text>
+    <text x="290" y="96" font-weight="400" font-size="12">тело как доска</text>
+    <text x="345" y="126">Таз провисает</text>
+    <text x="290" y="176" font-weight="400" font-size="12">болит поясница</text>
+    <text x="345" y="206">Таз вверх</text>
+    <text x="290" y="246" font-weight="400" font-size="12">корпус не работает</text>
+  </g>
+</svg>

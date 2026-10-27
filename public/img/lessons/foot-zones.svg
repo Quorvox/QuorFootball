@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 258" role="img" aria-label="Стопа сверху: внутренняя сторона для паса, шнуровка для удара и чеканки, внешняя сторона для финтов, носок не использовать">
+  <path d="M40 120 C40 90 80 80 120 82 L220 88 C280 90 320 105 322 130 C320 155 280 170 220 172 L120 178 C80 180 40 160 40 120Z" fill="var(--panel)" stroke="currentColor" stroke-width="3"/>
+  <rect x="140" y="104" width="92" height="32" rx="14" fill="var(--accent)" stroke="currentColor" stroke-width="2"/>
+  <path d="M120 82 L220 88" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M120 178 L220 172" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <path d="M300 112 C316 118 322 124 322 130 C322 136 316 142 300 148" stroke="currentColor" stroke-width="3" stroke-dasharray="5 4" fill="none"/>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <path d="M170 86 L170 46"/>
+    <path d="M186 138 L186 198"/>
+    <path d="M262 170 L262 232"/>
+    <path d="M316 118 L330 74"/>
+  </g>
+  <g fill="currentColor" font-size="13" font-weight="600">
+    <text x="170" y="36" text-anchor="middle">Внутренняя сторона: пас</text>
+    <text x="186" y="214" text-anchor="middle">Шнуровка (подъём): удар и чеканка</text>
+    <text x="262" y="248" text-anchor="middle">Внешняя сторона: финты</text>
+    <text x="350" y="60" text-anchor="end">Носок: не бить</text>
+  </g>
+</svg>

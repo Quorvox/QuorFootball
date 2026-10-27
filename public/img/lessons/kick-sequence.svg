@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 220" role="img" aria-label="Удар подъёмом в четырёх кадрах: разбег, опорная нога рядом с мячом, удар шнуровкой, проводка">
+  <g stroke="currentColor" stroke-width="2" opacity="0.5">
+    <path d="M0 152 H480"/>
+  </g>
+  <g stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- кадр 1: разбег -->
+    <g>
+      <circle cx="45" cy="38" r="9" fill="var(--panel)"/>
+      <path d="M45 48 L48 95"/>
+      <path d="M46 58 L30 76 M46 58 L64 70"/>
+      <path d="M48 95 L36 122 L22 150 M48 95 L64 118 L72 150"/>
+      <circle cx="104" cy="144" r="8" fill="var(--accent)" stroke-width="2.5"/>
+    </g>
+    <!-- кадр 2: опорная нога -->
+    <g transform="translate(120 0)">
+      <circle cx="50" cy="38" r="9" fill="var(--panel)"/>
+      <path d="M50 48 L52 95"/>
+      <path d="M50 58 L26 66 M50 58 L76 60"/>
+      <path d="M52 95 L58 124 L60 150"/>
+      <path d="M52 95 L40 122 L16 130"/>
+      <circle cx="88" cy="144" r="8" fill="var(--accent)" stroke-width="2.5"/>
+    </g>
+    <!-- кадр 3: удар -->
+    <g transform="translate(240 0)">
+      <circle cx="56" cy="38" r="9" fill="var(--panel)"/>
+      <path d="M54 48 L52 95"/>
+      <path d="M54 58 L28 70 M54 58 L80 62"/>
+      <path d="M52 95 L54 124 L54 150"/>
+      <path d="M52 95 L72 118 L94 136"/>
+      <circle cx="106" cy="144" r="8" fill="var(--accent)" stroke-width="2.5"/>
+    </g>
+    <!-- кадр 4: проводка -->
+    <g transform="translate(360 0)">
+      <circle cx="60" cy="38" r="9" fill="var(--panel)"/>
+      <path d="M58 48 L54 95"/>
+      <path d="M58 58 L32 62 M58 58 L84 74"/>
+      <path d="M54 95 L56 124 L56 150"/>
+      <path d="M54 95 L84 102 L108 88"/>
+      <circle cx="112" cy="62" r="8" fill="var(--accent)" stroke-width="2.5"/>
+      <path d="M104 128 L110 82" stroke-width="2" stroke-dasharray="4 5"/>
+    </g>
+  </g>
+  <g fill="currentColor" font-size="13" text-anchor="middle">
+    <text x="60" y="180" font-weight="700">1. Разбег</text>
+    <text x="60" y="198" font-size="12">под углом</text>
+    <text x="180" y="180" font-weight="700">2. Опора</text>
+    <text x="180" y="198" font-size="12">рядом с мячом</text>
+    <text x="300" y="180" font-weight="700">3. Удар</text>
+    <text x="300" y="198" font-size="12">шнуровкой</text>
+    <text x="420" y="180" font-weight="700">4. Проводка</text>
+    <text x="420" y="198" font-size="12">нога к цели</text>
+  </g>
+</svg>

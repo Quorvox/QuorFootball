@@ -1,0 +1,21 @@
+node_modules/
+data/*.db
+data/*.db-*
+uploads/*
+!uploads/.gitkeep
+.env
+.test/
+.npmrc
+.server.log
+.server.err
+.scratch/
+data/vapid.json
+
+# приложение: генерируется командой npm run build:app, ключи подписи только вне репозитория
+www/
+*.jks
+*.keystore
+keystore.properties
+.playwright-mcp/
+shots/
+release/

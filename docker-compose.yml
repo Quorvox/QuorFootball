@@ -1,0 +1,17 @@
+services:
+  football:
+    build: .
+    restart: unless-stopped
+    # наружу не светим: поставь перед ним nginx или Caddy с HTTPS
+    ports:
+      - "127.0.0.1:3100:3100"
+    environment:
+      # включи, когда сайт открывается по https
+      COOKIE_SECURE: "${COOKIE_SECURE:-0}"
+      # включи, если стоит за nginx
+      TRUST_PROXY: "${TRUST_PROXY:-0}"
+    volumes:
+      - football-data:/storage
+
+volumes:
+  football-data:
