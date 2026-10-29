@@ -326,3 +326,73 @@ progress { width: 100%; height: 10px; accent-color: var(--accent); }
 
 input[type='time'] { width: 150px; flex: none; padding: 8px 10px; text-align: center; font-family: var(--font-num); font-size: 22px; }
 input:disabled { opacity: 0.4; }
+
+/* школа мяча, карточки упражнений, схемы */
+.promo {
+  display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 14px; text-decoration: none;
+  padding: 16px; border-radius: var(--r); color: var(--ink);
+  background: linear-gradient(135deg, var(--accent-soft), transparent 70%), var(--panel); border: 1px solid var(--accent);
+}
+.promo .tile { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+.promo .title { font-family: var(--font-num); font-weight: 600; font-size: 24px; line-height: 1.1; }
+.promo .go { color: var(--accent-text); display: flex; }
+
+.ex-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.ex-card[open] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.ex-card summary {
+  list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 12px; margin: 0; color: var(--ink); cursor: pointer; font-size: inherit;
+}
+.ex-card summary::-webkit-details-marker { display: none; }
+.ex-card .n { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); font-family: var(--font-num); font-weight: 600; font-size: 18px; }
+.ex-card .nm { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 18px; line-height: 1.25; }
+.ex-card .amt { flex: none; font-family: var(--font-num); font-size: 20px; color: var(--accent-text); white-space: nowrap; }
+.ex-card .chev { flex: none; display: flex; color: var(--ink-2); transition: transform 0.15s; }
+.ex-card[open] .chev { transform: rotate(90deg); }
+.ex-card .ex-body { padding: 0 16px 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+.ex-card .tip { color: var(--ink-2); }
+.tags { gap: 6px; }
+.tag.space { color: var(--accent-text); border-color: var(--accent); display: inline-flex; align-items: center; gap: 4px; }
+.tag.school { background: var(--panel-2); }
+.tag.where { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 12.5px; }
+.tag.where.out { color: var(--evening); border-color: color-mix(in srgb, var(--evening) 50%, transparent); }
+.tag.where.in { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); }
+.why { font-size: 16.5px; }
+.why b { color: var(--accent-text); }
+.pressure { padding: 12px 14px; border-radius: var(--r-sm); background: color-mix(in srgb, var(--red) 12%, transparent); border-left: 4px solid var(--red); }
+.pressure .label { color: var(--red); }
+.diagram-fig { padding: 10px 10px 8px; background: var(--bg-2); }
+.diagram { display: block; width: 100%; height: auto; max-height: 260px; }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; margin-top: 8px; font-size: 13.5px; }
+.legend .lg { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; }
+.legend .lg.me { background: var(--accent); color: var(--accent-ink); font-size: 10px; font-weight: 700; text-align: center; line-height: 14px; }
+.legend .lg.ball { background: #f4f6f0; border: 1.5px solid #222; }
+.legend .lg.go { width: 22px; height: 3px; border-radius: 2px; background: var(--accent-text); }
+.legend .lg.fake { width: 22px; height: 0; border-radius: 0; border-top: 3px dotted var(--morning); }
+
+/* подсказка новичку */
+.howto { border-color: var(--accent); background: linear-gradient(160deg, var(--accent-soft), transparent 60%), var(--panel); }
+.howto-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.howto-list li { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; }
+.howto-list .ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+.howto-list b { font-weight: 600; }
+
+/* экран тренировки: кнопки всегда под рукой, схема в подсказке */
+.runner .controls { position: sticky; bottom: calc(-18px - env(safe-area-inset-bottom)); padding: 14px 0 6px; margin-top: auto; background: linear-gradient(transparent, var(--bg) 35%); }
+.runner .how { width: 100%; max-width: 480px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 4px 14px 14px; }
+.runner .how summary { padding: 10px 0; font-weight: 600; color: var(--ink); }
+.runner .how .how-body { text-align: left; }
+.runner .how .diagram-fig { background: var(--bg); }
+
+/* общий лоск карточек */
+.session { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset; transition: border-color 0.15s, transform 0.08s; }
+.session:hover { border-color: var(--accent); }
+.hero { box-shadow: 0 14px 34px color-mix(in srgb, var(--accent) 22%, transparent); }
+.hero::before {
+  content: ''; position: absolute; right: 38px; bottom: -34px; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.25), transparent 60%); opacity: 0.8; pointer-events: none;
+}
+.legend .lg.foe { background: none; color: var(--red); border: 2px solid var(--red); font-size: 11px; font-weight: 700; text-align: center; line-height: 10px; }
+.legend .lg.cone { width: 0; height: 0; border-radius: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 14px solid var(--evening); background: none; }
+.ex-card .nm.col { flex-direction: column; align-items: flex-start; gap: 2px; }
+.ex-card .nm .meta { font-size: 13.5px; font-weight: 500; }
+.ex-card[open] .meta { display: none; }

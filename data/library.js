@@ -13,6 +13,7 @@ const EQUIPMENT = [
   { id: 'rope', label: 'Скакалка' },
   { id: 'chair', label: 'Устойчивый стул или диван', hint: 'Для отжиманий с опорой и выпадов' },
   { id: 'cones', label: 'Конусы или бутылки', hint: 'Для слалома и челночного бега' },
+  { id: 'tight', label: 'Очень тесно: около 1×1 м', hint: 'Оставим только упражнения на месте, без ходьбы и пасов на расстояние' },
 ];
 
 const GROUPS = [
@@ -25,10 +26,23 @@ const GROUPS = [
   { key: 'mobility', label: 'Разминка и растяжка' },
 ];
 
+// space: tiny = хватает 1×1 м, small = до 2×2 м, big = нужна дорожка от 3 м; cat: раздел школы мяча; lvl: с какого уровня берём в план
 const E = (key, name, group, kind, base, tip, steps, o = {}) => ({
   key, name, group, kind, base, tip, steps,
   needs: o.needs || [], mistakes: o.mistakes || [], fig: o.fig || null, loud: Boolean(o.loud),
+  space: o.space || null, cat: o.cat || null, school: o.school || null, why: o.why || null, pressure: o.pressure || null, lvl: o.lvl || 'novice',
 });
+
+// разделы школы мяча
+const BALL_CATS = [
+  { key: 'control', label: 'Контроль', text: 'Приём, чувство мяча, мелкие касания' },
+  { key: 'dribble', label: 'Дриблинг', text: 'Ведение, развороты, смена темпа' },
+  { key: 'feint', label: 'Финты', text: 'Обмануть соперника корпусом и мячом' },
+  { key: 'accuracy', label: 'Точность', text: 'Пасы, удары, рондо' },
+  { key: 'juggle', label: 'Чеканка', text: 'Стопа, бедро, колено' },
+  { key: 'futsal', label: 'Футзал', text: 'Ловкость в тесноте' },
+  { key: 'vision', label: 'Под давлением', text: 'Осмотр, приём от соперника, решения' },
+];
 
 const LIST = [
   // ноги
@@ -277,6 +291,20 @@ const LIST = [
   E('ball_squat', 'Приседания с мячом в руках', 'ball', 'reps', 12, 'Мяч у груди, колени не заваливай.', ['Мяч у груди', 'Присед', 'Встань'], { needs: ['ball'] }),
 ];
 
+LIST.push(...require('./drills')(E));
+
+// раскладка старых упражнений по разделам и по тому, сколько места нужно
+const mark = (field, value, keys) => keys.forEach((k) => { const e = LIST.find((x) => x.key === k); if (e) e[field] = value; });
+mark('cat', 'juggle', ['juggle_catch', 'juggle', 'juggle_alt', 'juggle_thigh', 'juggle_weak', 'low_juggle']);
+mark('cat', 'control', ['toe_taps', 'inside_roll', 'sole_roll', 'v_pull', 'pendulum', 'first_touch_wall', 'accuracy_stop', 'ball_squat']);
+mark('cat', 'dribble', ['figure8', 'inside_outside', 'dribble_turns', 'cone_dribble', 'weak_foot_dribble', 'box_dribble', 'pull_back_turn', 'sprint_ball']);
+mark('cat', 'feint', ['cruyff', 'scissors']);
+mark('cat', 'accuracy', ['wall_pass', 'instep_wall', 'gate_pass', 'chair_pass', 'shoot_target']);
+mark('cat', 'vision', ['blind_touch']);
+mark('space', 'tiny', ['juggle_catch', 'juggle', 'juggle_alt', 'juggle_thigh', 'juggle_weak', 'low_juggle', 'toe_taps', 'inside_roll', 'sole_roll', 'v_pull', 'pendulum', 'accuracy_stop', 'scissors', 'blind_touch', 'ball_squat', 'fast_feet', 'quiet_steps', 'box_steps', 'jog', 'high_knees']);
+mark('space', 'small', ['figure8', 'inside_outside', 'dribble_turns', 'weak_foot_dribble', 'box_dribble', 'pull_back_turn', 'cruyff', 'quiet_skater', 'tape_ladder', 'jump_rope', 'lunge', 'side_lunge', 'cossack', 'skater', 'star_jumps', 'burpees']);
+mark('space', 'big', ['wall_pass', 'instep_wall', 'first_touch_wall', 'gate_pass', 'chair_pass', 'cone_dribble', 'shoot_target', 'sprint_ball', 'sprint_20', 'shuttle_run', 'cone_weave', 'broad_jump', 'shuffle']);
+
 const LIB = Object.fromEntries(LIST.map((e) => [e.key, e]));
 
-module.exports = { LIB, LIST, GROUPS, EQUIPMENT };
+module.exports = { LIB, LIST, GROUPS, EQUIPMENT, BALL_CATS };

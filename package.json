@@ -1,12 +1,12 @@
 {
   "name": "quorfootball",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "QuorFootball: тренировки футболиста дома. План, питание, вода, таймер, уроки и отчёты",
   "private": true,
   "main": "server.js",
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning server.js",
-    "check": "node --disable-warning=ExperimentalWarning scripts/carry.js && node --disable-warning=ExperimentalWarning scripts/notify.js && node --disable-warning=ExperimentalWarning scripts/local-smoke.js && node --disable-warning=ExperimentalWarning scripts/smoke.js",
+    "check": "node --disable-warning=ExperimentalWarning scripts/drills.js && node --disable-warning=ExperimentalWarning scripts/carry.js && node --disable-warning=ExperimentalWarning scripts/notify.js && node --disable-warning=ExperimentalWarning scripts/local-smoke.js && node --disable-warning=ExperimentalWarning scripts/smoke.js",
     "build:app": "node scripts/build-app.js"
   },
   "type": "commonjs",

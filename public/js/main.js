@@ -21,6 +21,7 @@ const ROUTES = {
   library: { view: 'library' },
   reminders: { view: 'reminders' },
   school: { view: 'school' },
+  drills: { view: 'drills' },
   lesson: { view: 'lesson' },
   food: { view: 'food' },
   progress: { view: 'progress' },

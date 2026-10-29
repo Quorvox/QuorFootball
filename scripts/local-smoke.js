@@ -38,11 +38,14 @@ const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const homeCard = pl.data.days.flatMap((d) => d.sessions).find((x) => x.home);
   ok(Boolean(homeCard) && (await call('GET', '/api/workout/' + homeCard.home)).data.baseRef === homeCard.ref, 'приложение: план Б собирается');
 
+  const dr = await call('GET', '/api/drills');
+  ok(dr.status === 200 && dr.data.cats.length >= 5 && dr.data.cats.flatMap((c) => c.items).length >= 30, 'приложение: школа мяча отдаёт упражнения');
+
   const n = await call('GET', '/api/nutrition');
   ok(n.data.minor && n.data.meals.length === 5, 'приложение: питание считается');
   ok((await call('POST', '/api/water', { date: '2026-10-27', delta: 250 })).data.ml === 250, 'приложение: вода +250');
   ok((await call('POST', '/api/water', { date: '2026-10-27', delta: -9999 })).status === 400, 'приложение: вода, большая дельта отклонена');
-  ok((await call('POST', '/api/weight', { date: '2026-10-28', kg: 63.4 })).status === 200 && (await call('GET', '/api/me')).data.user.weight === 63.4, 'приложение: вес сохраняется в профиль');
+  ok((await call('POST', '/api/weight', { date: '2099-01-01', kg: 63.4 })).status === 200 && (await call('GET', '/api/me')).data.user.weight === 63.4, 'приложение: вес сохраняется в профиль');
   ok((await call('POST', '/api/records', { date: '2026-10-27', kind: 'juggle', value: 12 })).status === 201 && (await call('GET', '/api/records?kind=juggle')).data.best === 12, 'приложение: рекорд чеканки');
   ok((await call('GET', '/api/lessons')).data.items.length >= 11 && (await call('GET', '/api/lessons/city')).status === 200, 'приложение: уроки');
   const lib = await call('GET', '/api/library');

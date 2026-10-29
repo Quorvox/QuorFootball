@@ -51,9 +51,9 @@ const SESSIONS = {
     title: 'Мяч: чеканка и контроль',
     focus: 'Чеканка, первое касание, чувство мяча',
     slots: L(
-      one('juggle_catch', 'juggle', 'toe_taps', 'inside_roll', 'sole_roll'),
-      one('juggle_alt', 'juggle', 'toe_taps', 'inside_roll', 'v_pull'),
-      one('juggle_thigh', 'juggle_weak', 'juggle_alt', 'v_pull', 'sole_roll')
+      [['juggle_catch', 'juggle'], ['toe_taps', 'clock_taps'], ['inside_roll', 'pendulum'], ['sole_roll', 'sole_l'], ['drag_push', 'v_pull']],
+      [['juggle_alt', 'juggle', 'knee_juggle'], ['toe_taps', 'clock_taps'], ['inside_roll', 'croqueta', 'drag_push'], ['v_pull', 'sole_l', 'sole_slide'], ['thigh_control', 'first_touch_away']],
+      [['juggle_thigh', 'juggle_alt', 'knee_juggle'], ['juggle_weak', 'low_juggle'], ['croqueta', 'drag_push', 'v_pull'], ['sole_l', 'clock_taps', 'sole_roll'], ['first_touch_away', 'thigh_control', 'accuracy_stop']]
     ),
   },
   BALL2: {
@@ -62,9 +62,9 @@ const SESSIONS = {
     title: 'Мяч: удар и пас',
     focus: 'Пас внутренней стороной, удар подъёмом, приём',
     slots: L(
-      [['wall_pass', 'gate_pass', 'inside_roll'], ['first_touch_wall', 'accuracy_stop', 'sole_roll'], ['instep_wall', 'shoot_target', 'chair_pass', 'v_pull'], ['dribble_turns', 'pendulum']],
-      [['wall_pass', 'gate_pass', 'inside_roll'], ['instep_wall', 'shoot_target', 'chair_pass', 'v_pull'], ['first_touch_wall', 'accuracy_stop', 'sole_roll'], ['dribble_turns', 'box_dribble'], ['weak_foot_dribble']],
-      [['wall_pass', 'gate_pass', 'inside_roll'], ['instep_wall', 'shoot_target', 'chair_pass', 'v_pull'], ['first_touch_wall', 'accuracy_stop', 'sole_roll'], ['juggle_weak', 'low_juggle'], ['weak_foot_dribble']]
+      [['wall_pass', 'gate_pass', 'tape_line', 'inside_roll'], ['first_touch_wall', 'accuracy_stop', 'thigh_control', 'sole_roll'], ['instep_wall', 'shoot_target', 'chair_pass', 'cushion_pass', 'v_pull'], ['dribble_turns', 'pendulum']],
+      [['wall_pass', 'gate_pass', 'cushion_pass', 'inside_roll'], ['instep_wall', 'shoot_target', 'chair_pass', 'v_pull'], ['first_touch_wall', 'first_touch_away', 'accuracy_stop', 'sole_roll'], ['wall_rondo', 'two_touch', 'dribble_turns', 'box_dribble'], ['weak_foot_dribble']],
+      [['wall_rondo', 'wall_pass', 'gate_pass', 'inside_roll'], ['instep_wall', 'shoot_target', 'chair_pass', 'v_pull'], ['two_touch', 'first_touch_wall', 'first_touch_away', 'sole_roll'], ['juggle_weak', 'low_juggle'], ['weak_foot_dribble']]
     ),
   },
   BALL3: {
@@ -73,9 +73,60 @@ const SESSIONS = {
     title: 'Мяч: ведение и слабая нога',
     focus: 'Ведение, развороты, работа слабой ногой',
     slots: L(
-      [['figure8', 'box_dribble'], ['inside_outside', 'pendulum'], ['dribble_turns', 'pull_back_turn'], ['weak_foot_dribble']],
-      [['cone_dribble', 'box_dribble', 'figure8'], ['inside_outside', 'pendulum'], ['cruyff', 'scissors', 'dribble_turns'], ['weak_foot_dribble'], ['blind_touch', 'juggle_weak']],
-      [['cone_dribble', 'box_dribble', 'figure8'], ['inside_outside', 'pendulum'], ['cruyff', 'scissors'], ['pull_back_turn', 'dribble_turns'], ['weak_foot_dribble'], ['blind_touch', 'juggle_weak']]
+      [['figure8', 'box_dribble', 'l_turn'], ['inside_outside', 'outside_push', 'pendulum'], ['dribble_turns', 'pull_back_turn'], ['weak_foot_dribble']],
+      [['cone_dribble', 'mini_slalom', 'box_dribble', 'figure8'], ['inside_outside', 'outside_push', 'pendulum'], ['cruyff', 'step_over', 'scissors', 'dribble_turns'], ['weak_foot_dribble'], ['shield_dribble', 'blind_touch', 'juggle_weak']],
+      [['cone_dribble', 'mini_slalom', 'triangle_dribble', 'figure8'], ['inside_outside', 'outside_push', 'pendulum'], ['cruyff', 'matthews', 'step_over', 'scissors'], ['pull_back_turn', 'l_turn', 'dribble_turns'], ['weak_foot_dribble'], ['shield_dribble', 'blind_touch', 'juggle_weak']]
+    ),
+  },
+  // дальше тренировки только из каталога: в расписание недели не входят, делай в любой день
+  BALL4: {
+    group: 'ball',
+    title: 'Контроль: первое касание',
+    focus: 'Приём мяча стопой, бедром и подошвой, уход от «соперника»',
+    slots: L(
+      [['accuracy_stop', 'thigh_control'], ['sole_roll', 'sole_spin'], ['first_touch_away', 'first_touch_wall', 'inside_roll'], ['juggle_catch', 'knee_juggle'], ['drag_push', 'v_pull']],
+      [['accuracy_stop', 'thigh_control'], ['sole_spin', 'sole_roll'], ['first_touch_away', 'first_touch_wall'], ['knee_juggle', 'juggle_alt', 'juggle'], ['drag_push', 'croqueta'], ['two_touch', 'cushion_pass', 'inside_roll']],
+      [['thigh_control', 'accuracy_stop'], ['sole_spin', 'sole_roll'], ['first_touch_away', 'first_touch_wall'], ['juggle_thigh', 'knee_juggle', 'juggle_alt'], ['croqueta', 'drag_push'], ['two_touch', 'cushion_pass', 'inside_roll']]
+    ),
+  },
+  BALL5: {
+    group: 'ball',
+    title: 'Дриблинг по методу Кёрвера',
+    focus: 'Мелкие касания обеими ногами, смена направления, мяч не отпускаешь',
+    slots: L(
+      [['toe_taps', 'clock_taps'], ['drag_push', 'v_pull'], ['inside_outside', 'ball_switch', 'pendulum'], ['l_turn', 'triangle_dribble', 'figure8'], ['outside_push', 'weak_foot_dribble']],
+      [['toe_taps', 'clock_taps'], ['drag_push', 'v_pull', 'croqueta'], ['inside_outside', 'ball_switch'], ['l_turn', 'triangle_dribble', 'figure8'], ['outside_push', 'pull_back_turn'], ['weak_foot_dribble']],
+      [['clock_taps', 'toe_taps'], ['croqueta', 'drag_push'], ['ball_switch', 'inside_outside'], ['triangle_dribble', 'l_turn', 'figure8'], ['outside_push', 'pull_back_turn'], ['weak_foot_dribble'], ['pace_change', 'sprint_ball', 'shield_dribble']]
+    ),
+  },
+  BALL6: {
+    group: 'ball',
+    title: 'Финты: обмани соперника',
+    focus: 'Накладка, Мэттьюз, Кройф, рулетка: корпус говорит одно, мяч уходит в другое',
+    slots: L(
+      [['scissors', 'pull_back_turn'], ['cruyff', 'dribble_turns'], ['shoulder_fake', 'l_turn'], ['step_over', 'figure8']],
+      [['scissors', 'step_over'], ['cruyff', 'matthews'], ['shoulder_fake', 'l_turn'], ['step_over', 'pull_back_turn'], ['weak_foot_dribble']],
+      [['step_over', 'scissors'], ['matthews', 'cruyff'], ['roulette', 'pull_back_turn'], ['elastico', 'shoulder_fake'], ['weak_foot_dribble']]
+    ),
+  },
+  BALL7: {
+    group: 'ball',
+    title: 'Футзал: ловкость в тесноте',
+    focus: 'Всё на месте, хватает 1×1 м, тихо и без прыжков',
+    slots: L(
+      [['futsal_box', 'toe_taps'], ['clock_taps', 'pendulum'], ['sole_l', 'sole_slide', 'sole_roll'], ['drag_push', 'v_pull'], ['scissors', 'inside_roll']],
+      [['futsal_box', 'toe_taps'], ['clock_taps', 'pendulum'], ['sole_l', 'sole_slide'], ['croqueta', 'drag_push'], ['scissors', 'knee_juggle'], ['first_touch_away', 'thigh_control']],
+      [['futsal_box', 'clock_taps'], ['sole_l', 'sole_slide'], ['croqueta', 'drag_push'], ['scissors', 'knee_juggle'], ['pressure_clock', 'scan_touch'], ['first_touch_away', 'thigh_control', 'juggle_weak']]
+    ),
+  },
+  BALL8: {
+    group: 'ball',
+    title: 'Игра под давлением',
+    focus: 'Осмотр поля, закрытие мяча корпусом, приём от «соперника»',
+    slots: L(
+      [['blind_touch', 'scan_touch'], ['shield_dribble', 'pressure_clock', 'box_dribble'], ['first_touch_away', 'thigh_control'], ['juggle_catch', 'knee_juggle']],
+      [['scan_touch', 'blind_touch'], ['shield_dribble', 'pressure_clock', 'box_dribble'], ['first_touch_away', 'thigh_control'], ['two_touch', 'wall_rondo', 'cushion_pass'], ['juggle_weak', 'knee_juggle']],
+      [['scan_touch', 'blind_touch'], ['pressure_clock', 'shield_dribble'], ['first_touch_away', 'thigh_control'], ['wall_rondo', 'two_touch', 'cushion_pass'], ['croqueta', 'drag_push'], ['juggle_weak', 'knee_juggle']]
     ),
   },
   REC: {
@@ -91,6 +142,14 @@ const SESSIONS = {
   },
 };
 
+// запасные «тихие» упражнения на месте: если места мало (режим 1×1 м), слот не пропадает, а заменяется ими
+const TINY_POOL = { novice: ['sole_l', 'drag_push', 'clock_taps', 'toe_taps', 'pendulum'], middle: ['sole_l', 'drag_push', 'clock_taps', 'croqueta', 'sole_slide'], pro: ['croqueta', 'sole_l', 'drag_push', 'clock_taps', 'sole_slide'] };
+for (const code of ['BALL2', 'BALL3', 'BALL5', 'BALL6']) {
+  for (const lv of Object.keys(TINY_POOL)) {
+    SESSIONS[code].slots[lv].forEach((opts, i) => { opts.push(...TINY_POOL[lv].slice(i % 3).concat(TINY_POOL[lv].slice(0, i % 3))); });
+  }
+}
+
 // [день недели, утро, вариант, вечер, вариант]; 1 = понедельник. Вечер null = без второй сессии.
 const SCHEDULE = {
   novice: [[1, 'LEGS', 1, 'BALL1', 1], [3, 'UPPER', 1, 'BALL2', 1], [5, 'SPEED', 1, 'BALL3', 1], [6, 'REC', 1, null, 1]],
@@ -102,7 +161,7 @@ const SCHEDULE = {
 const SESSION_GROUPS = [
   { key: 'strength', label: 'Сила', text: 'Ноги, верх тела, пресс и кор' },
   { key: 'speed', label: 'Скорость', text: 'Ловкость, смена направления, выносливость' },
-  { key: 'ball', label: 'С мячом', text: 'Чеканка, пас, удар, ведение' },
+  { key: 'ball', label: 'С мячом', text: 'Чеканка, дриблинг, финты, футзал, игра под давлением' },
   { key: 'recovery', label: 'Восстановление', text: 'Мобильность и лёгкая растяжка' },
 ];
 

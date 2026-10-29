@@ -1,7 +1,7 @@
 // Обзор тренировки: что внутри, как делать каждое упражнение, и кнопка «Начать».
 import { get, del } from '../api.js';
 import { h, icon, toast, WD_FULL } from '../ui.js';
-import { SLOT, backLink, exerciseDetail } from '../components.js';
+import { SLOT, backLink, exerciseDetail, exerciseTags, whereTag } from '../components.js';
 
 const PHASES = [
   ['warmup', 'Разминка'],
@@ -27,7 +27,8 @@ export async function render(ctx) {
     h('header', { class: 'page-head' },
       h('p', { class: 'row small muted', style: { gap: '6px' } }, icon(lesson || catalog ? 'clock' : slot.icon, 16), when, w.custom ? h('span', { class: 'tag', text: 'своя' }) : null, isHome ? h('span', { class: 'tag now', text: 'план Б, дома' }) : null),
       h('h1', { text: w.title }),
-      h('p', { class: 'muted', text: `${w.focus}. Примерно ${w.minutes} мин.` })),
+      h('p', { class: 'muted', text: `${w.focus}. Примерно ${w.minutes} мин.` }),
+      whereTag(w)),
     h('a', { class: 'btn primary big block', href: '#/run/' + w.ref }, icon('play', 22), 'Начать тренировку'));
 
   // план Б: дождь, холод, нет места или стены, поэтому та же тренировка, но дома
@@ -46,17 +47,19 @@ export async function render(ctx) {
   for (const [key, label] of PHASES) {
     const items = w.exercises.filter((e) => e.phase === key);
     if (!items.length) continue;
-    root.append(h('section', { class: 'panel' },
-      h('h3', { text: label }),
-      h('ul', { class: 'list' }, items.map((e) =>
-        h('li', null,
-          h('div', { class: 'ex' },
-            h('span', { class: 'name' }, e.name, e.load ? h('span', { class: 'tag', style: { marginLeft: '8px' }, text: e.load }) : null),
-            h('span', { class: 'amt', text: amountText(e) })),
-          h('details', null,
-            h('summary', { text: 'Как делать' }),
-            h('p', { text: e.tip }),
-            exerciseDetail(e)))))));
+    root.append(h('section', { class: 'stack tight' },
+      h('div', { class: 'row between' }, h('h2', { text: label }), h('span', { class: 'small muted', text: `${items.length} упр.` })),
+      items.map((e, i) =>
+        h('details', { class: 'ex-card' },
+          h('summary', null,
+            h('span', { class: 'n', text: i + 1 }),
+            h('span', { class: 'nm' }, h('b', { text: e.name }), e.load ? h('span', { class: 'tag', text: e.load }) : null),
+            h('span', { class: 'amt', text: amountText(e) }),
+            h('span', { class: 'chev' }, icon('next', 18))),
+          h('div', { class: 'ex-body stack tight' },
+            h('p', { class: 'tip', text: e.tip }),
+            exerciseTags(e),
+            exerciseDetail(e))))));
   }
 
   if (w.custom) {

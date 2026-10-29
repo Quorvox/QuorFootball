@@ -1,7 +1,7 @@
 // Каталог тренировок по группам: любую можно сделать в любой день, к расписанию они не привязаны.
 import { get } from '../api.js';
 import { h, icon, store } from '../ui.js';
-import { pageHead } from '../components.js';
+import { pageHead, whereTag } from '../components.js';
 
 const GROUP_ICON = { strength: 'dumbbell', speed: 'flame', ball: 'ball', recovery: 'moon' };
 
@@ -23,7 +23,9 @@ export async function render() {
             h('span', { class: 'tile' }, icon(GROUP_ICON[g.key], 26)),
             h('div', { class: 'body' },
               h('div', { class: 'title', text: w.title }),
-              h('div', { class: 'small muted', text: `${w.minutes} мин, ${w.count} упр.` })),
+              h('div', { class: 'small muted', text: w.focus }),
+              h('div', { class: 'small muted', text: `${w.minutes} мин, ${w.count} упр.` }),
+              whereTag(w)),
             h('div', { class: 'go' }, icon('next', 24)))))));
   };
   draw();

@@ -1,6 +1,7 @@
 // Тренировка по шагам: таймер, отдых между подходами, звук, отчёт в конце.
 import { get, upload } from '../api.js';
 import { h, svgEl, icon, ring, beep, buzz, fmtClock, localDate, toast } from '../ui.js';
+import { exerciseDetail, exerciseTags } from '../components.js';
 
 const PHASE_LABEL = { warmup: 'Разминка', main: 'Основная часть', cooldown: 'Заминка' };
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -11,7 +12,7 @@ function buildSteps(list) {
   const steps = [{ type: 'ready', secs: 5, name: 'Приготовься', tip: 'Встань так, чтобы хватало места. Рядом вода.', next: list[0]?.name }];
   list.forEach((e, i) => {
     for (let s = 1; s <= e.sets; s++) {
-      steps.push({ type: 'work', name: e.name, tip: e.tip, how: e.steps || [], load: e.load, phase: e.phase, set: s, sets: e.sets, ex: i, secs: e.kind === 'time' ? e.amount : null, reps: e.kind === 'reps' ? e.amount : null });
+      steps.push({ type: 'work', name: e.name, tip: e.tip, data: e, load: e.load, phase: e.phase, set: s, sets: e.sets, ex: i, secs: e.kind === 'time' ? e.amount : null, reps: e.kind === 'reps' ? e.amount : null });
       const lastSet = s === e.sets;
       const lastEx = i === list.length - 1;
       if (lastSet && lastEx) continue;
@@ -54,8 +55,8 @@ export async function render(ctx) {
   const subEl = h('p', { class: 'muted' });
   const tipEl = h('p', { class: 'tip' });
   const howEl = h('details', { class: 'how' }, h('summary', { text: 'Как делать' }));
-  const howList = h('ol', { class: 'steps-list' });
-  howEl.append(howList);
+  const howBody = h('div', { class: 'stack tight how-body' });
+  howEl.append(howBody);
   const stage = h('div', { class: 'stage' },
     h('div', { class: 'pitch' }, lines, r.el, h('div', { class: 'center' }, timeEl, unitEl)),
     nameEl, subEl, tipEl, howEl);
@@ -92,8 +93,8 @@ export async function render(ctx) {
       const parts = [s.sets > 1 ? `Подход ${s.set} из ${s.sets}` : '', s.load || ''].filter(Boolean);
       subEl.textContent = parts.join(', ');
       tipEl.textContent = s.tip;
-      howList.replaceChildren(...s.how.map((t) => h('li', { text: t })));
-      howEl.hidden = !s.how.length;
+      howBody.replaceChildren(exerciseTags(s.data), exerciseDetail(s.data));
+      howEl.hidden = !(s.data.steps?.length || s.data.key);
     } else {
       subEl.textContent = s.next ? `Дальше: ${s.next}` : '';
       tipEl.textContent = s.tip;
@@ -122,7 +123,8 @@ export async function render(ctx) {
     const s = steps[i];
     remaining = s.secs ?? 0;
     lastBeep = null;
-    howEl.open = false;
+    // первый подход основной части: сразу показываем схему и шаги, чтобы не искать «Как делать»
+    howEl.open = s.type === 'work' && s.set === 1 && s.phase === 'main';
     if (s.type === 'work') { beep(1040, 220); buzz(150); } else if (s.type === 'rest') { beep(520, 160); }
     paint();
   }

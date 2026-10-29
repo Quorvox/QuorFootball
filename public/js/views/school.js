@@ -11,7 +11,11 @@ const GROUPS = [
 
 export async function render() {
   const { items } = await get('/api/lessons');
-  const root = h('div', { class: 'stack' }, pageHead('Школа', 'Учись шаг за шагом. Каждый урок можно сразу потренировать.'));
+  const root = h('div', { class: 'stack' }, pageHead('Школа', 'Учись шаг за шагом. Каждый урок можно сразу потренировать.'),
+    h('a', { class: 'promo', href: '#/drills' },
+      h('span', { class: 'tile' }, icon('ball', 28)),
+      h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа мяча' }), h('div', { class: 'small', text: 'Дриблинг, контроль, финты, футзал, игра под давлением. Со схемой к каждому упражнению.' })),
+      h('div', { class: 'go' }, icon('next', 24))));
   for (const [key, title, sub] of GROUPS) {
     const list = items.filter((l) => l.group === key);
     if (!list.length) continue;

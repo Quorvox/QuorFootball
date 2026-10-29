@@ -5,7 +5,7 @@ const { isDate, estimateMin } = require('../lib/util');
 const { findWorkout, weekPlan, daySessions, streakOf, allCards, catalog } = require('../lib/workouts');
 const { haveOf, ok, item } = require('../lib/build');
 const { LEVELS } = require('../data/levels');
-const { LIB, LIST, GROUPS } = require('../data/library');
+const { LIB, LIST, GROUPS, BALL_CATS } = require('../data/library');
 const { WARM, WARM_BALL, COOL } = require('../data/program');
 const { calc, tips } = require('../data/plan');
 
@@ -68,6 +68,25 @@ router.get('/exercises', (req, res) => {
       }),
   })).filter((g) => g.items.length);
   res.json({ groups, hidden });
+});
+
+// школа мяча: упражнения с мячом по разделам, только то, что подходит под оборудование и место
+router.get('/drills', (req, res) => {
+  const have = haveOf(req.user);
+  const L = LEVELS[req.user.level];
+  let hidden = 0;
+  const cats = BALL_CATS.map((c) => ({
+    key: c.key, label: c.label, text: c.text,
+    items: LIST.filter((e) => e.group === 'ball' && e.cat === c.key).filter((e) => (ok(e.key, have) ? true : (hidden++, false)))
+      .map((e) => {
+        const it = item(e.key, req.user.level, 'main', L.sets, null);
+        return {
+          key: e.key, name: e.name, kind: e.kind, amount: it.amount, sets: it.sets, tip: e.tip, why: e.why, school: e.school,
+          space: e.space, lvl: e.lvl, steps: e.steps, mistakes: e.mistakes, pressure: e.pressure, fig: e.fig,
+        };
+      }),
+  })).filter((c) => c.items.length);
+  res.json({ cats, hidden, tight: have.has('tight') });
 });
 
 router.get('/custom', (req, res) => {

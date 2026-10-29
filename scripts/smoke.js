@@ -134,7 +134,7 @@ const mains = (w) => w.exercises.filter((e) => e.phase === 'main');
   ok(t.data.streak === 1 && t.data.water.ml === 250, 'серия и вода на экране «Сегодня»');
   await call(cookie, 'POST', '/api/weight', { date: '2026-10-27', kg: 63.5 });
   const pr = await call(cookie, 'GET', '/api/progress?today=2026-10-27');
-  ok(pr.data.total === 2 && pr.data.weights.length === 1, 'прогресс: отчёты и вес');
+  ok(pr.data.total === 2 && pr.data.weights.some((x) => x.date === '2026-10-27' && x.kg === 63.5), 'прогресс: отчёты и вес');
 
   ok(fs.readdirSync(path.join(tmp, 'uploads')).length === 1, 'в uploads лежит только принятый файл');
   // каталог по группам, напоминания, подписки
@@ -182,7 +182,15 @@ const mains = (w) => w.exercises.filter((e) => e.phase === 'main');
   let cityNames = [];
   for (const r of cityRefs) cityNames = cityNames.concat((await call(cityCookie, 'GET', '/api/workout/' + r)).data.exercises.map((e) => e.name));
   ok(!cityNames.some((n) => WALL_DRILLS.includes(n)), 'городской профиль: ни одного упражнения со стеной');
-  ok(['Пас в «ворота»', 'Гашение мяча на коврике'].every((n) => cityNames.includes(n)), 'городской профиль: точность тренируется дома (пасы в ворота, гашение)');
+  ok(cityNames.includes('Пас в «ворота»') && ['Гашение мяча на коврике', 'Приём от «давления»'].some((n) => cityNames.includes(n)), 'городской профиль: точность тренируется дома (пасы в ворота, гашение или приём)');
+  const cityDrills = await call(cityCookie, 'GET', '/api/drills');
+  const drillItems = cityDrills.data.cats.flatMap((c) => c.items);
+  ok(cityDrills.status === 200 && cityDrills.data.cats.length >= 5 && drillItems.length >= 30, 'школа мяча: разделы и упражнения отдаются');
+  ok(!drillItems.some((e) => WALL_DRILLS.includes(e.name)), 'школа мяча: без стены упражнений со стеной нет');
+  const tight = await call(null, 'POST', '/api/profile', { name: 'Тесно', sex: 'm', age: 20, height: 180, weight: 72, level: 'middle', goal: 'maintain', position: 'mid', equipment: ['ball', 'tight', 'quiet'] });
+  const tightCookie = (tight.headers.get('set-cookie') || '').split(';')[0];
+  const tightDrills = (await call(tightCookie, 'GET', '/api/drills')).data;
+  ok(tight.status === 201 && tightDrills.tight && tightDrills.cats.flatMap((c) => c.items).every((e) => e.space === 'tiny'), 'школа мяча: в тесном режиме только упражнения на месте');
   ok(!cityNames.some((n) => ['Бёрпи', 'Скакалка', 'Прыжки из приседа', 'Спринты 20 м'].includes(n)), 'тихий режим: шумные упражнения не берутся');
   await call(cityCookie, 'DELETE', '/api/me');
 
