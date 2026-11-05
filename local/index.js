@@ -16,6 +16,7 @@ const ready = dbmod.init(initSqlJs, wasm).then(() => {
 globalThis.QF_LOCAL = {
   ready,
   native: reminders.native(),
+  reminders: { hold: (slot) => reminders.hold(slot) },
   async request(method, url, body) {
     await ready;
     return api.request(method, url, body);
@@ -25,6 +26,6 @@ globalThis.QF_LOCAL = {
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') dbmod.flush();
-    else ready.then(() => reminders.reschedule());
+    else ready.then(() => { reminders.consume(); reminders.reschedule(); });
   });
 }

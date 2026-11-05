@@ -255,6 +255,7 @@ export async function render(ctx) {
     root.remove();
   });
 
+  globalThis.QF_LOCAL?.reminders?.hold(w.slot);
   enter();
   return root;
 }

@@ -10,10 +10,10 @@ export async function render() {
   const all = plan.days.flatMap((d) => d.sessions);
   const root = h('div', { class: 'stack' },
     pageHead('План недели', `Уровень «${plan.level.label}». Сделано ${all.filter((s) => s.done).length} из ${all.length}.`),
-    h('div', { class: 'row wrap' },
-      h('a', { class: 'btn sm', href: '#/library', text: 'Все тренировки по группам' }),
-      h('a', { class: 'btn sm', href: '#/profile', text: 'Сменить уровень' }),
-      h('a', { class: 'btn sm', href: '#/builder', text: 'Добавить свою тренировку' })));
+    h('div', { class: 'actions' },
+      h('a', { class: 'btn sm', href: '#/library', text: 'По группам' }),
+      h('a', { class: 'btn sm', href: '#/profile', text: 'Уровень' }),
+      h('a', { class: 'btn sm', href: '#/builder', text: 'Своя' })));
 
   for (const d of plan.days) {
     root.append(h('section', { class: 'stack tight' },

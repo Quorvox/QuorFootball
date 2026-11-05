@@ -93,4 +93,7 @@ async function route() {
 }
 
 window.addEventListener('hashchange', route);
+window.addEventListener('qf-reminder', (e) => {
+  if (e.detail?.emergency) toast('Понял, экстренный случай. Тренировка перенесётся на ближайший свободный день.');
+});
 route();

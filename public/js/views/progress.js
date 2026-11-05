@@ -23,7 +23,7 @@ export async function render(ctx) {
     h('h3', { text: 'Вес' }),
     weightChart(pr.weights),
     h('form', {
-      class: 'row wrap', style: { alignItems: 'flex-end' }, onsubmit: async (e) => {
+      class: 'weight-form', onsubmit: async (e) => {
         e.preventDefault();
         try {
           await post('/api/weight', { date: date.value, kg: Number(String(kg.value).replace(',', '.')) });
@@ -33,8 +33,8 @@ export async function render(ctx) {
         } catch (ex) { toast(ex.message, 'error'); }
       },
     },
-      h('div', { class: 'field grow' }, h('label', { for: 'w-date', text: 'Дата' }), date),
-      h('div', { class: 'field grow' }, h('label', { for: 'w-kg', text: 'Вес, кг' }), kg),
+      h('div', { class: 'field' }, h('label', { for: 'w-date', text: 'Дата' }), date),
+      h('div', { class: 'field' }, h('label', { for: 'w-kg', text: 'Вес, кг' }), kg),
       h('button', { class: 'btn primary', type: 'submit', text: 'Записать' })),
     h('p', { class: 'hint', text: 'Взвешивайся утром натощак раз в неделю. Питание пересчитается по последнему весу.' })));
 

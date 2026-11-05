@@ -12,7 +12,7 @@ export const SLOT = {
 export function whereTag(s) {
   if (!s.ball) return null;
   return s.home
-    ? h('span', { class: 'tag where out' }, icon('sun', 13), 'лучше на улице, дома тоже можно')
+    ? h('span', { class: 'tag where out' }, icon('sun', 13), 'лучше на улице')
     : h('span', { class: 'tag where in' }, icon('home', 13), 'хватит комнаты');
 }
 

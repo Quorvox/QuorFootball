@@ -38,7 +38,7 @@ export async function render(ctx) {
       h('a', { href: `#/workout/${next.home}`, text: 'Сделать дома (план Б)' })));
   }
 
-  // подсказка новичку: пока не нажал «Понятно», висит наверху
+  // подсказка новичку: свёрнута, пока не нажал «Понятно»
   if (!store.get('howto-done', false)) {
     const steps = [
       ['play', 'Жми «Начать»', 'Таймер сам ведёт по упражнениям и отдыху.'],
@@ -46,12 +46,12 @@ export async function render(ctx) {
       ['home', 'Негде или дождь?', 'Нажми «План Б» или отметь в профиле «Очень тесно».'],
       ['check', 'В конце сохрани отчёт', 'Тренировка засчитается в план и серию.'],
     ];
-    const box = h('section', { class: 'panel howto stack tight', 'aria-label': 'Как пользоваться' },
-      h('div', { class: 'row between' }, h('h3', { text: 'Как тут всё устроено' }),
-        h('button', { class: 'btn quiet sm', 'aria-label': 'Скрыть подсказку', onclick: () => { store.set('howto-done', true); box.remove(); } }, icon('x', 18))),
-      h('ul', { class: 'howto-list' }, steps.map(([ic, t, p]) =>
-        h('li', null, h('span', { class: 'ic' }, icon(ic, 20)), h('div', null, h('b', { text: t }), h('p', { class: 'small muted', text: p }))))),
-      h('button', { class: 'btn sm primary', onclick: () => { store.set('howto-done', true); box.remove(); }, text: 'Понятно' }));
+    const box = h('details', { class: 'panel howto', 'aria-label': 'Как пользоваться' },
+      h('summary', null, icon('book', 20), 'Как тут всё устроено', h('span', { class: 'chev' }, icon('next', 18))),
+      h('div', { class: 'howto-body' },
+        h('ul', { class: 'howto-list' }, steps.map(([ic, t, p]) =>
+          h('li', null, h('span', { class: 'ic' }, icon(ic, 18)), h('div', null, h('b', { text: t }), h('p', { class: 'small muted', text: p }))))),
+        h('button', { class: 'btn sm', onclick: () => { store.set('howto-done', true); box.remove(); }, text: 'Понятно, скрыть' })));
     root.append(box);
   }
 
@@ -72,7 +72,7 @@ export async function render(ctx) {
   // вода
   let ml = t.water.ml;
   const target = t.water.target;
-  const r = ring({ size: 120, stroke: 12, value: ml / target });
+  const r = ring({ size: 108, stroke: 11, value: ml / target });
   const mlEl = h('div', { class: 'num', style: { fontSize: '30px', lineHeight: '1' }, text: ml });
   const hint = h('p', { class: 'small muted' });
   const showHint = () => {
@@ -95,7 +95,7 @@ export async function render(ctx) {
       h('div', { class: 'stack tight grow' },
         h('h3', { text: `Вода: норма ${target} мл` }),
         hint,
-        h('div', { class: 'row wrap' },
+        h('div', { class: 'actions' },
           h('button', { class: 'btn sm primary', onclick: () => add(250), text: '+250' }),
           h('button', { class: 'btn sm', onclick: () => add(500), text: '+500' }),
           h('button', { class: 'btn sm quiet', onclick: () => add(-250), 'aria-label': 'Убрать 250 мл', text: '-250' }))))));
@@ -106,20 +106,16 @@ export async function render(ctx) {
     h('div', { class: 'stat' }, h('div', { class: 'big', text: t.sessions.filter((s) => s.done).length + '/' + t.sessions.length }), h('div', { class: 'small muted', text: 'сегодня сделано' })),
     h('a', { class: 'stat', href: '#/timer', style: { textDecoration: 'none' } }, h('div', { class: 'big' }, icon('clock', 36)), h('div', { class: 'small muted', text: 'таймер' }))));
 
-  root.append(h('a', { class: 'promo', href: '#/drills' },
-    h('span', { class: 'tile' }, icon('ball', 28)),
-    h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа мяча' }), h('div', { class: 'small', text: 'Дриблинг, контроль, финты, футзал. Каждое упражнение со схемой.' })),
-    h('div', { class: 'go' }, icon('next', 24))));
-  root.append(h('aside', { class: 'panel flat paint' }, h('p', { class: 'label', text: 'Совет дня' }), h('p', { text: t.tip })));
-
-  // урок дня: каждый день другой, чтобы Школу замечали
+  // два быстрых входа рядом: школа мяча и урок дня (каждый день другой)
   const { items } = await get('/api/lessons');
   const lesson = items[Math.floor(Date.now() / 86400000) % items.length];
-  root.append(h('section', { class: 'stack tight' },
-    h('p', { class: 'label', text: 'Урок дня' }),
-    h('a', { class: 'session', href: '#/lesson/' + lesson.id },
-      h('span', { class: 'tile' }, icon('book', 26)),
-      h('div', { class: 'body' }, h('div', { class: 'title', text: lesson.title }), h('div', { class: 'small muted', text: lesson.summary })),
-      h('div', { class: 'go' }, icon('next', 24)))));
+  root.append(h('div', { class: 'pair' },
+    h('a', { class: 'promo', href: '#/drills' },
+      h('span', { class: 'tile' }, icon('ball', 22)),
+      h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа мяча' }), h('div', { class: 'small muted', text: 'Дриблинг, финты, контроль' }))),
+    h('a', { class: 'promo', href: '#/lesson/' + lesson.id },
+      h('span', { class: 'tile' }, icon('book', 22)),
+      h('div', { class: 'body' }, h('div', { class: 'title', text: 'Урок дня' }), h('div', { class: 'small muted', text: lesson.title })))));
+  root.append(h('p', { class: 'small muted' }, h('b', { text: 'Совет дня. ' }), t.tip));
   return root;
 }

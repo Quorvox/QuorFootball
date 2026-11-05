@@ -26,16 +26,30 @@ export async function render() {
     const time = h('input', { type: 'time', id, value: value || fallback, 'aria-label': label });
     time.disabled = !value;
     on.addEventListener('change', () => { time.disabled = !on.checked; });
-    return { get: () => (on.checked ? time.value || null : null), el: h('div', { class: 'row between panel' },
+    return { get: () => (on.checked ? time.value || null : null), el: h('div', { class: 'panel slot' },
       h('label', { class: 'check', for: id + '-on' }, on, h('span', { class: 'name', text: label })), time) };
   };
   const morning = slotField('r-morning', 'Утренняя тренировка', s.morning, '08:00');
   const evening = slotField('r-evening', 'Вечерняя тренировка', s.evening, '19:00');
   const state = h('p', { class: 'small' });
 
+  // только в приложении: звонок на весь экран и повторы, пока тренировка не сделана
+  const loud = s.loud || { fullScreen: true, repeat: true };
+  const fsOn = h('input', { type: 'checkbox', id: 'r-fs', checked: loud.fullScreen });
+  const repOn = h('input', { type: 'checkbox', id: 'r-rep', checked: loud.repeat });
+  const fsWarn = h('p', { class: 'small warn', hidden: s.fullScreenAllowed !== false },
+    'Android не разрешил полноэкранные напоминания. ',
+    h('button', { class: 'linkish', type: 'button', text: 'Разрешить', onclick: () => post('/api/reminders/settings', { what: 'fullscreen' }) }));
+  const loudPanel = NATIVE ? h('section', { class: 'panel stack tight' },
+    h('h3', { text: 'Чтобы не пропустить' }),
+    h('label', { class: 'check', for: 'r-fs' }, fsOn, h('span', null, h('b', { text: 'Звонок на весь экран' }), h('span', { class: 'small muted block-text', text: 'Напоминание появится поверх экрана блокировки, как у будильника.' }))),
+    fsWarn,
+    h('label', { class: 'check', for: 'r-rep' }, repOn, h('span', null, h('b', { text: 'Повторять каждые 5 минут' }), h('span', { class: 'small muted block-text', text: 'Если не начал, напомню снова, до часа. Закончишь тренировку, и повторы перестанут.' }))),
+    h('p', { class: 'small muted', text: 'Не можешь заниматься, нажми в напоминании «Экстренно не могу». Повторы прекратятся, тренировка перенесётся на ближайший свободный день.' })) : null;
+
   const save = async () => {
     try {
-      await put('/api/reminders', { morning: morning.get(), evening: evening.get(), tz: Intl.DateTimeFormat().resolvedOptions().timeZone });
+      await put('/api/reminders', { morning: morning.get(), evening: evening.get(), tz: Intl.DateTimeFormat().resolvedOptions().timeZone, loud: NATIVE ? { fullScreen: fsOn.checked, repeat: repOn.checked } : undefined });
       toast('Время сохранено');
     } catch (e) { toast(e.message, 'error'); }
   };
@@ -43,7 +57,7 @@ export async function render() {
   async function refresh() {
     if (NATIVE) {
       const r = await get('/api/reminders');
-      state.textContent = r.permission === 'granted' ? 'Уведомления включены. Они приходят в выбранное время, пока на этот день есть невыполненная тренировка.'
+      state.textContent = r.permission === 'granted' ? 'Напоминания включены. Они приходят в выбранное время, пока тренировка не сделана.'
         : r.permission === 'denied' ? 'Android запретил уведомления для приложения. Разреши их в настройках телефона (Приложения, QuorFootball, Уведомления) и вернись сюда.'
           : 'Уведомления ещё не включены.';
       on.hidden = r.permission === 'granted' || r.permission === 'denied';
@@ -89,10 +103,10 @@ export async function render() {
     try { await save(); await post(NATIVE ? '/api/reminders/test' : '/api/push/test'); toast(NATIVE ? 'Пробное придёт через 5 секунд' : 'Отправил пробное, проверь экран'); } catch (e) { toast(e.message, 'error'); }
   } }, 'Прислать пробное');
 
-  root.append(morning.el, evening.el,
+  root.append(morning.el, evening.el, ...(loudPanel ? [loudPanel] : []),
     h('button', { class: 'btn block', type: 'button', onclick: save }, 'Сохранить время'),
     h('section', { class: 'panel stack tight' }, h('h3', { text: 'Уведомления на этом устройстве' }), state, on, test, off),
-    h('p', { class: 'hint', text: NATIVE ? 'Уведомления ставятся прямо на телефоне, интернет не нужен. Расписание обновляется, когда ты открываешь приложение, поэтому заглядывай хотя бы раз в пару недель.' : 'Уведомления приходят через сервис браузера (Google, Mozilla или Apple), на сайте они работают по HTTPS и на localhost. Сервер должен быть включён в нужное время. Часовой пояс берётся из браузера.' }));
+    h('p', { class: 'hint', text: NATIVE ? 'Напоминания ставятся прямо на телефоне, интернет не нужен. Расписание обновляется, когда ты открываешь приложение, поэтому заглядывай хотя бы раз в пару недель.' : 'Уведомления приходят через сервис браузера (Google, Mozilla или Apple), на сайте они работают по HTTPS и на localhost. Сервер должен быть включён в нужное время. Часовой пояс берётся из браузера.' }));
   refresh();
   return root;
 }

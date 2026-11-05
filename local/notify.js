@@ -14,8 +14,8 @@ const okTz = (tz) => {
 
 router.get('/reminders', async (req, res) => {
   const u = req.user;
-  const perm = await reminders.status();
-  res.json({ morning: u.remind_morning, evening: u.remind_evening, tz: u.tz, subscribed: perm === 'granted', native: true, permission: perm });
+  const d = await reminders.details();
+  res.json({ morning: u.remind_morning, evening: u.remind_evening, tz: u.tz, subscribed: d.permission === 'granted', native: true, permission: d.permission, fullScreenAllowed: d.fullScreen, loud: reminders.getPrefs() });
 });
 
 router.put('/reminders', (req, res) => {
@@ -28,6 +28,7 @@ router.put('/reminders', (req, res) => {
   }
   if (!okTz(b.tz)) return res.status(400).json({ error: 'Не удалось определить часовой пояс.' });
   db.prepare('UPDATE users SET remind_morning = ?, remind_evening = ?, tz = ? WHERE id = ?').run(morning, evening, b.tz, req.user.id);
+  if (b.loud && typeof b.loud === 'object') reminders.setPrefs(b.loud);
   reminders.reschedule();
   res.json({ ok: true });
 });
@@ -35,6 +36,12 @@ router.put('/reminders', (req, res) => {
 router.post('/reminders/enable', async (req, res) => {
   const perm = await reminders.enable();
   res.json({ permission: perm });
+});
+
+router.post('/reminders/settings', async (req, res) => {
+  const what = req.body && req.body.what === 'fullscreen' ? 'fullscreen' : 'notifications';
+  await reminders.openSettings(what);
+  res.json({ ok: true });
 });
 
 router.post('/reminders/test', async (req, res) => {

@@ -15,8 +15,8 @@ const LINKS = [
 export async function render(ctx) {
   const root = h('div', { class: 'stack' }, pageHead('Ещё'));
   root.append(h('nav', { class: 'stack tight', 'aria-label': 'Дополнительно' }, LINKS.map(([href, ic, title, text]) =>
-    h('a', { class: 'session', style: { gridTemplateColumns: '56px 1fr auto' }, href },
-      h('span', { class: 'row', style: { justifyContent: 'center' } }, icon(ic, 26)),
+    h('a', { class: 'session', href },
+      h('span', { class: 'tile' }, icon(ic, 24)),
       h('div', { class: 'body' }, h('div', { class: 'title', text: title }), h('div', { class: 'small muted', text })),
       h('div', { class: 'go' }, icon('next', 24))))));
 

@@ -2,7 +2,7 @@
   "appId": "com.quorvox.quorfootball",
   "appName": "QuorFootball",
   "webDir": "www",
-  "backgroundColor": "#0d120f",
+  "backgroundColor": "#0e1311",
   "server": {
     "androidScheme": "https"
   },
@@ -12,7 +12,7 @@
   "plugins": {
     "LocalNotifications": {
       "smallIcon": "ic_stat_qf",
-      "iconColor": "#C6F03C"
+      "iconColor": "#79C68A"
     }
   }
 }
