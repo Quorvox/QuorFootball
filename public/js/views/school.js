@@ -5,6 +5,7 @@ import { pageHead } from '../components.js';
 
 const GROUPS = [
   ['ball', 'Футбольная техника', 'Мяч, чеканка, удары, пас, ведение'],
+  ['box', 'Бокс', 'Стойка, удары, защита, школы бокса'],
   ['strength', 'Сила с нуля', 'Отжимания, подтягивания, пресс по ступеням'],
   ['home', 'Дома', 'Как тренироваться безопасно'],
 ];
@@ -15,6 +16,10 @@ export async function render() {
     h('a', { class: 'promo', href: '#/drills' },
       h('span', { class: 'tile' }, icon('ball', 28)),
       h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа мяча' }), h('div', { class: 'small', text: 'Дриблинг, контроль, финты, футзал, игра под давлением. Со схемой к каждому упражнению.' })),
+      h('div', { class: 'go' }, icon('next', 24))),
+    h('a', { class: 'promo', href: '#/drills/box' },
+      h('span', { class: 'tile' }, icon('glove', 28)),
+      h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа бокса' }), h('div', { class: 'small', text: 'Стойка, удары, защита, мешок. Фото, видео и подсказки тренера голосом.' })),
       h('div', { class: 'go' }, icon('next', 24))));
   for (const [key, title, sub] of GROUPS) {
     const list = items.filter((l) => l.group === key);
@@ -24,7 +29,7 @@ export async function render() {
       list.map((l) => {
         const done = store.get('lesson-' + l.id, []).length;
         return h('a', { class: 'session ' + (key === 'strength' ? '' : 'evening'), href: '#/lesson/' + l.id },
-          h('span', { class: 'tile' }, icon(key === 'strength' ? 'dumbbell' : key === 'home' ? 'home' : 'ball', 26)),
+          h('span', { class: 'tile' }, icon(key === 'strength' ? 'dumbbell' : key === 'home' ? 'home' : key === 'box' ? 'glove' : 'ball', 26)),
           h('div', { class: 'body' },
             h('div', { class: 'when', text: `${l.level}, ${l.minutes} мин` }),
             h('div', { class: 'title', text: l.title }),

@@ -5,19 +5,20 @@ const { cleanProfile } = require('../lib/validate');
 const { removeFiles } = require('../lib/files');
 const { LEVELS } = require('../data/levels');
 const { EQUIPMENT } = require('../data/library');
+const { SPORT_LIST, BOX_STYLE_LIST } = require('../data/boxing');
 
 const router = express.Router();
 
 const parseEquip = (s) => { try { return JSON.parse(s || '[]'); } catch { return []; } };
 const publicUser = (u) => ({
   name: u.name, sex: u.sex, age: u.age, height: u.height, weight: u.weight,
-  level: u.level, goal: u.goal, position: u.position,
+  level: u.level, goal: u.goal, position: u.position, sport: u.sport || 'football', box_style: u.box_style || 'soviet',
   equipment: parseEquip(u.equipment), dumbbell_kg: u.dumbbell_kg ?? null,
 });
 const levelList = Object.entries(LEVELS).map(([key, v]) => ({ key, label: v.label }));
 
 // что умеет сервис: уровни и список оборудования (нужно до регистрации)
-router.get('/catalog', (req, res) => res.json({ levels: levelList, equipment: EQUIPMENT }));
+router.get('/catalog', (req, res) => res.json({ levels: levelList, equipment: EQUIPMENT, sports: SPORT_LIST, boxStyles: BOX_STYLE_LIST }));
 
 // от одного IP не больше 20 новых профилей в час, чтобы не забили базу
 const hits = new Map();
@@ -35,8 +36,8 @@ router.post('/profile', limitCreate, (req, res) => {
   if (error) return res.status(400).json({ error });
   const token = newToken();
   const r = db.prepare(
-    'INSERT INTO users (token_hash, name, sex, age, height, weight, level, goal, position, equipment, dumbbell_kg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  ).run(hash(token), value.name, value.sex, value.age, value.height, value.weight, value.level, value.goal, value.position, JSON.stringify(value.equipment), value.dumbbell_kg);
+    'INSERT INTO users (token_hash, name, sex, age, height, weight, level, goal, position, equipment, dumbbell_kg, sport, box_style) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  ).run(hash(token), value.name, value.sex, value.age, value.height, value.weight, value.level, value.goal, value.position, JSON.stringify(value.equipment), value.dumbbell_kg, value.sport, value.box_style);
   const today = new Date().toISOString().slice(0, 10);
   db.prepare('INSERT INTO weights (user_id, date, kg) VALUES (?, ?, ?)').run(r.lastInsertRowid, today, value.weight);
   res.setHeader('Set-Cookie', cookieHeader(token));
@@ -52,8 +53,8 @@ router.get('/me', (req, res) => {
 router.put('/me', auth, (req, res) => {
   const { value, error } = cleanProfile({ ...publicUser(req.user), ...req.body });
   if (error) return res.status(400).json({ error });
-  db.prepare('UPDATE users SET name=?, sex=?, age=?, height=?, weight=?, level=?, goal=?, position=?, equipment=?, dumbbell_kg=? WHERE id=?')
-    .run(value.name, value.sex, value.age, value.height, value.weight, value.level, value.goal, value.position, JSON.stringify(value.equipment), value.dumbbell_kg, req.user.id);
+  db.prepare('UPDATE users SET name=?, sex=?, age=?, height=?, weight=?, level=?, goal=?, position=?, equipment=?, dumbbell_kg=?, sport=?, box_style=? WHERE id=?')
+    .run(value.name, value.sex, value.age, value.height, value.weight, value.level, value.goal, value.position, JSON.stringify(value.equipment), value.dumbbell_kg, value.sport, value.box_style, req.user.id);
   res.json({ user: value });
 });
 

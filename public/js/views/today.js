@@ -108,14 +108,22 @@ export async function render(ctx) {
 
   // два быстрых входа рядом: школа мяча и урок дня (каждый день другой)
   const { items } = await get('/api/lessons');
-  const lesson = items[Math.floor(Date.now() / 86400000) % items.length];
-  root.append(h('div', { class: 'pair' },
-    h('a', { class: 'promo', href: '#/drills' },
-      h('span', { class: 'tile' }, icon('ball', 22)),
-      h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа мяча' }), h('div', { class: 'small muted', text: 'Дриблинг, финты, контроль' }))),
-    h('a', { class: 'promo', href: '#/lesson/' + lesson.id },
-      h('span', { class: 'tile' }, icon('book', 22)),
-      h('div', { class: 'body' }, h('div', { class: 'title', text: 'Урок дня' }), h('div', { class: 'small muted', text: lesson.title })))));
+  const mySport = ctx.user.sport || 'football';
+  // урок дня берём из того, что человек тренирует: футбол, бокс или то и другое
+  const groups = mySport === 'boxing' ? ['box', 'strength'] : mySport === 'football' ? ['ball', 'strength', 'home'] : null;
+  const pool = groups ? items.filter((l) => groups.includes(l.group)) : items;
+  const lesson = pool[Math.floor(Date.now() / 86400000) % pool.length];
+  const sport = ctx.user.sport || 'football';
+  const ballCard = h('a', { class: 'promo', href: '#/drills' },
+    h('span', { class: 'tile' }, icon('ball', 22)),
+    h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа мяча' }), h('div', { class: 'small muted', text: 'Дриблинг, финты, контроль' })));
+  const boxCard = h('a', { class: 'promo', href: '#/drills/box' },
+    h('span', { class: 'tile' }, icon('glove', 22)),
+    h('div', { class: 'body' }, h('div', { class: 'title', text: 'Школа бокса' }), h('div', { class: 'small muted', text: 'Стойка, удары, защита' })));
+  const lessonCard = h('a', { class: 'promo', href: '#/lesson/' + lesson.id },
+    h('span', { class: 'tile' }, icon('book', 22)),
+    h('div', { class: 'body' }, h('div', { class: 'title', text: 'Урок дня' }), h('div', { class: 'small muted', text: lesson.title })));
+  root.append(h('div', { class: 'pair' }, ...(sport === 'both' ? [ballCard, boxCard] : [sport === 'boxing' ? boxCard : ballCard, lessonCard])));
   root.append(h('p', { class: 'small muted' }, h('b', { text: 'Совет дня. ' }), t.tip));
   return root;
 }

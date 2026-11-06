@@ -1,6 +1,6 @@
 // База в приложении: sql.js (SQLite в WebAssembly) с тем же интерфейсом, что у node:sqlite.
 // Маршруты сервера работают с ней без изменений. Файл базы сохраняется в IndexedDB после записи.
-const { SCHEMA } = require('../lib/schema');
+const { SCHEMA, migrations } = require('../lib/schema');
 const storage = require('./storage');
 
 let inner = null;
@@ -54,6 +54,10 @@ async function init(initSqlJs, wasmBinary) {
   inner = saved ? new SQL.Database(saved) : new SQL.Database();
   inner.run('PRAGMA foreign_keys = ON');
   inner.exec(SCHEMA);
+  // база из прошлой версии приложения: добавляем новые колонки профиля
+  const info = inner.exec('PRAGMA table_info(users)');
+  const cols = info.length ? info[0].values.map((r) => r[1]) : [];
+  for (const sql of migrations(cols)) inner.run(sql);
   return db;
 }
 

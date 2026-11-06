@@ -70,7 +70,7 @@ async function route() {
   if (ctx.user && name === 'welcome') return ctx.go('');
 
   const r = ROUTES[name] || ROUTES[''];
-  const tab = TABS.some((t) => t.path === name) ? name : ['timer', 'builder', 'profile', 'reminders'].includes(name) ? 'more' : name === 'library' ? 'plan' : name === 'lesson' ? 'school' : name === 'workout' ? (params[0]?.startsWith('l-') ? 'school' : 'plan') : '';
+  const tab = TABS.some((t) => t.path === name) ? name : ['timer', 'builder', 'profile', 'reminders'].includes(name) ? 'more' : name === 'library' ? 'plan' : name === 'lesson' || name === 'drills' ? 'school' : name === 'workout' ? (params[0]?.startsWith('l-') ? 'school' : 'plan') : '';
   nav.hidden = !!r.focus;
   app.classList.toggle('bare', !!r.focus);
   if (!r.focus) buildNav(tab);

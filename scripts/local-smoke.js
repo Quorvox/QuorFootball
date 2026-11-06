@@ -41,6 +41,13 @@ const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const dr = await call('GET', '/api/drills');
   ok(dr.status === 200 && dr.data.cats.length >= 5 && dr.data.cats.flatMap((c) => c.items).length >= 30, 'приложение: школа мяча отдаёт упражнения');
 
+  const bx = await call('GET', '/api/drills?sport=box');
+  ok(bx.status === 200 && bx.data.kind === 'box' && bx.data.cats.length >= 5, 'приложение: школа бокса отдаёт упражнения');
+  ok((await call('PUT', '/api/me', { sport: 'boxing', box_style: 'american' })).status === 200 && (await call('GET', '/api/me')).data.user.box_style === 'american', 'приложение: спорт и стиль меняются в профиле');
+  const bplan = (await call('GET', '/api/plan?today=2026-10-27')).data.days.flatMap((d) => d.sessions);
+  ok(bplan.some((x) => /^Бокс:/.test(x.title)), 'приложение: после выбора бокса в плане боксёрские тренировки');
+  await call('PUT', '/api/me', { sport: 'football' });
+
   const n = await call('GET', '/api/nutrition');
   ok(n.data.minor && n.data.meals.length === 5, 'приложение: питание считается');
   ok((await call('POST', '/api/water', { date: '2026-10-27', delta: 250 })).data.ml === 250, 'приложение: вода +250');
@@ -49,7 +56,7 @@ const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   ok((await call('POST', '/api/records', { date: '2026-10-27', kind: 'juggle', value: 12 })).status === 201 && (await call('GET', '/api/records?kind=juggle')).data.best === 12, 'приложение: рекорд чеканки');
   ok((await call('GET', '/api/lessons')).data.items.length >= 11 && (await call('GET', '/api/lessons/city')).status === 200, 'приложение: уроки');
   const lib = await call('GET', '/api/library');
-  ok(lib.data.groups.length === 4, 'приложение: каталог тренировок по группам');
+  ok(lib.data.groups.length === 5, 'приложение: каталог тренировок по группам');
   const cw = await call('POST', '/api/custom', { title: 'Моя', weekday: 2, slot: 'morning', items: [{ key: 'squat', sets: 3, amount: 15 }] });
   ok(cw.status === 201 && (await call('GET', '/api/workout/' + cw.data.ref)).status === 200, 'приложение: своя тренировка');
 
@@ -73,6 +80,22 @@ const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const rem = (await call('GET', '/api/reminders')).data;
   ok(rem.evening === '19:30' && rem.native === true, 'приложение: напоминания читаются');
   ok((await call('GET', '/api/plan?today=2026-10-27')).data.days.flatMap((d) => d.sessions).some((x) => x.time === '19:30'), 'приложение: время видно в карточках');
+
+  // база прошлой версии приложения (sql.js): те же шаги, что в local/db.js при запуске
+  {
+    const initSqlJs = require('sql.js');
+    const { SCHEMA, migrations } = require('../lib/schema');
+    const SQL = await initSqlJs();
+    const old = new SQL.Database();
+    old.exec("CREATE TABLE users (id INTEGER PRIMARY KEY, token_hash TEXT, name TEXT, sex TEXT, age INTEGER, height INTEGER, weight REAL, level TEXT, goal TEXT, position TEXT, equipment TEXT NOT NULL DEFAULT '[]', dumbbell_kg REAL, remind_morning TEXT, remind_evening TEXT, tz TEXT, created_at TEXT)");
+    old.run("INSERT INTO users (id, token_hash, name) VALUES (1, 'x', 'Старый')");
+    const reopened = new SQL.Database(old.export());
+    reopened.exec(SCHEMA);
+    const info = reopened.exec('PRAGMA table_info(users)');
+    for (const sql of migrations(info.length ? info[0].values.map((r) => r[1]) : [])) reopened.run(sql);
+    const row = reopened.exec('SELECT sport, box_style FROM users WHERE id = 1')[0].values[0];
+    ok(row[0] === 'football' && row[1] === 'soviet', 'приложение: база прошлой версии получает колонки спорта и стиля, профиль цел');
+  }
 
   ok((await call('GET', '/api/nope')).status === 404, 'приложение: левый адрес даёт 404');
   ok((await call('DELETE', '/api/reports/' + rep.data.id)).status === 200 && (await call('GET', '/api/reports')).data.items.length === 0, 'приложение: отчёт удаляется');

@@ -14,7 +14,7 @@ router.get('/nutrition', (req, res) => {
   const c = calc(u, days);
   res.json({
     calc: c,
-    meals: meals(c.kcal),
+    meals: meals(c.kcal, u.sport),
     tips: tips(u),
     shopping: shopping(u, c.kcal),
     minor: u.age < 18,

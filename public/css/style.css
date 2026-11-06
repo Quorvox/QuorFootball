@@ -418,3 +418,14 @@ input:disabled { opacity: 0.4; }
 .runner .how summary { padding: 10px 0; font-weight: 600; color: var(--ink); }
 .runner .how .how-body { text-align: left; }
 .runner .how .diagram-fig { background: var(--bg); }
+
+/* подсказка тренера на бое с тенью: крупно, чтобы читалось и без звука */
+.runner .call { min-height: 36px; font-family: var(--font-num); font-weight: 600; font-size: 28px; line-height: 1.15; color: var(--accent-text); max-width: 520px; }
+.runner .top .btn { gap: 6px; }
+.legend .lg.foot { width: 10px; height: 16px; border-radius: 50%; background: var(--accent); border: 2px solid var(--accent); }
+
+/* экран тренировки на невысоком телефоне: центр только пока всё помещается, иначе сверху вниз и прокрутка (safe center в старых WebView не работает, поэтому через авто-поля) */
+.runner .stage { justify-content: flex-start; padding-top: 4px; }
+.runner .stage::before, .runner .stage::after { content: ''; flex: 0 0 0; }
+.runner .stage::before { margin-top: auto; }
+.runner .stage::after { margin-bottom: auto; }

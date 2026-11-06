@@ -59,6 +59,13 @@
         </provider>
     </application>
 
+    <!-- голос тренера: Android 11+ даёт видеть движки речи только по запросу -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />

@@ -3,6 +3,8 @@ import { h, icon } from './ui.js';
 import { PHOTOS } from './photos.js';
 import { diagram } from './diagrams.js';
 
+const STYLE_NAME = { soviet: 'советская', american: 'американская', mexican: 'мексиканская', cuban: 'кубинская' };
+
 export const SLOT = {
   morning: { label: 'Утро', icon: 'sun' },
   evening: { label: 'Вечер', icon: 'moon' },
@@ -111,6 +113,7 @@ export function exerciseTags(e) {
   return h('div', { class: 'row wrap tags' },
     sp ? h('span', { class: 'tag space' }, icon('ball', 13), sp.label) : null,
     e.school ? h('span', { class: 'tag school', text: e.school }) : null,
+    e.styles?.length ? h('span', { class: 'tag', text: `для стиля: ${e.styles.map((x) => STYLE_NAME[x]).join(', ')}` }) : null,
     e.lvl && LEVEL_TAG[e.lvl] ? h('span', { class: 'tag', text: LEVEL_TAG[e.lvl] }) : null);
 }
 
@@ -120,9 +123,10 @@ function legend(uses) {
   return h('figcaption', { class: 'small muted legend' },
     h('span', { class: 'lg me', text: 'я' }), ' ты ',
     has('ball') ? [h('span', { class: 'lg ball' }), ' мяч '] : null,
-    has('go') ? [h('span', { class: 'lg go' }), ' ход мяча '] : null,
+    has('go') ? [h('span', { class: 'lg go' }), has('ball') ? ' ход мяча ' : ' движение или удар '] : null,
     has('fake') ? [h('span', { class: 'lg fake' }), ' нога, обман или возврат '] : null,
     has('foe') ? [h('span', { class: 'lg foe', text: '×' }), ' соперник '] : null,
+    has('foot') ? [h('span', { class: 'lg foot' }), ' стопа, закрашена передняя '] : null,
     has('cone') ? [h('span', { class: 'lg cone' }), ' конус или бутылка '] : null);
 }
 
@@ -135,5 +139,6 @@ export function exerciseDetail(e) {
     e.steps?.length ? h('ol', { class: 'steps-list' }, e.steps.map((s) => h('li', { text: s }))) : null,
     e.pressure ? h('div', { class: 'pressure' }, h('p', { class: 'label', text: 'Под давлением' }), h('p', { text: e.pressure })) : null,
     e.mistakes?.length ? h('div', null, h('p', { class: 'label', text: 'Частые ошибки' }), h('ul', { class: 'mistakes' }, e.mistakes.map((m) => h('li', { text: m })))) : null,
-    e.fig ? figure(e.fig) : null);
+    e.fig ? figure(e.fig) : null,
+    e.video ? videoBlock(e.video) : (e.group === 'box' || e.cat ? h('a', { class: 'small', href: youtubeSearch(`${e.name} ${e.group === 'box' || ['stance', 'punch', 'defense', 'combo', 'bag', 'cond'].includes(e.cat) ? 'бокс как делать' : 'футбол упражнение как делать'}`), target: '_blank', rel: 'noopener noreferrer', text: 'Найти видео, как делать' }) : null));
 }

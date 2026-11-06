@@ -5,7 +5,7 @@ const { isDate, estimateMin } = require('../lib/util');
 const { findWorkout, weekPlan, daySessions, streakOf, allCards, catalog } = require('../lib/workouts');
 const { haveOf, ok, item } = require('../lib/build');
 const { LEVELS } = require('../data/levels');
-const { LIB, LIST, GROUPS, BALL_CATS } = require('../data/library');
+const { LIB, LIST, GROUPS, BALL_CATS, BOX_CATS } = require('../data/library');
 const { WARM, WARM_BALL, COOL } = require('../data/program');
 const { calc, tips } = require('../data/plan');
 
@@ -63,30 +63,31 @@ router.get('/exercises', (req, res) => {
     label: g.label,
     items: LIST.filter((e) => e.group === g.key).filter((e) => (ok(e.key, have) ? true : (hidden++, false)))
       .map((e) => {
-        const it = item(e.key, req.user.level, 'main', L.sets, dbKg);
+        const it = item(e.key, req.user.level, 'main', L.sets, dbKg, 1, req.user.box_style);
         return { key: e.key, name: e.name, kind: e.kind, amount: it.amount, sets: it.sets, tip: e.tip, load: it.load };
       }),
   })).filter((g) => g.items.length);
   res.json({ groups, hidden });
 });
 
-// школа мяча: упражнения с мячом по разделам, только то, что подходит под оборудование и место
+// школа мяча и школа бокса: упражнения по разделам, только то, что подходит под оборудование и место
 router.get('/drills', (req, res) => {
+  const kind = req.query.sport === 'box' ? 'box' : 'ball';
   const have = haveOf(req.user);
   const L = LEVELS[req.user.level];
   let hidden = 0;
-  const cats = BALL_CATS.map((c) => ({
+  const cats = (kind === 'box' ? BOX_CATS : BALL_CATS).map((c) => ({
     key: c.key, label: c.label, text: c.text,
-    items: LIST.filter((e) => e.group === 'ball' && e.cat === c.key).filter((e) => (ok(e.key, have) ? true : (hidden++, false)))
+    items: LIST.filter((e) => e.group === kind && e.cat === c.key).filter((e) => (ok(e.key, have) ? true : (hidden++, false)))
       .map((e) => {
-        const it = item(e.key, req.user.level, 'main', L.sets, null);
+        const it = item(e.key, req.user.level, 'main', L.sets, null, 1, req.user.box_style);
         return {
           key: e.key, name: e.name, kind: e.kind, amount: it.amount, sets: it.sets, tip: e.tip, why: e.why, school: e.school,
-          space: e.space, lvl: e.lvl, steps: e.steps, mistakes: e.mistakes, pressure: e.pressure, fig: e.fig,
+          space: e.space, lvl: e.lvl, steps: e.steps, mistakes: e.mistakes, pressure: e.pressure, fig: e.fig, video: e.video, styles: e.styles,
         };
       }),
   })).filter((c) => c.items.length);
-  res.json({ cats, hidden, tight: have.has('tight') });
+  res.json({ kind, cats, hidden, tight: have.has('tight'), style: req.user.box_style || 'soviet' });
 });
 
 router.get('/custom', (req, res) => {
@@ -115,7 +116,7 @@ router.post('/custom', (req, res) => {
     if (!ok(key, have)) return res.status(400).json({ error: 'Для этого упражнения нужно оборудование, которого нет в профиле.' });
     if (!Number.isInteger(sets) || sets < 1 || sets > 6) return res.status(400).json({ error: 'Подходов может быть от 1 до 6.' });
     if (!Number.isInteger(amount) || amount < 5 || amount > 300) return res.status(400).json({ error: 'Повторов или секунд может быть от 5 до 300.' });
-    main.push({ ...item(key, u.level, 'main', sets, dbKg), amount, rest: L.rest });
+    main.push({ ...item(key, u.level, 'main', sets, dbKg, 1, u.box_style), amount, rest: L.rest });
   }
   const withWarm = b.withWarmup !== false;
   const hasBall = main.some((m) => LIB[m.key].group === 'ball');

@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
+
+import java.util.Locale;
 
 import androidx.core.app.NotificationManagerCompat;
 
@@ -29,9 +32,58 @@ public class QFRemindersPlugin extends Plugin {
     static String pendingUrl;
     private static QFRemindersPlugin instance;
 
+    // голос тренера: в WebView нет речи, поэтому говорит Android
+    private TextToSpeech tts;
+    private boolean ttsReady = false;
+    private String pendingSpeech = null;
+
     @Override
     public void load() {
         instance = this;
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        if (tts != null) { tts.stop(); tts.shutdown(); tts = null; ttsReady = false; }
+    }
+
+    private void ensureTts() {
+        if (tts != null) return;
+        tts = new TextToSpeech(getContext().getApplicationContext(), (status) -> {
+            if (status != TextToSpeech.SUCCESS || tts == null) return;
+            int r = tts.setLanguage(new Locale("ru", "RU"));
+            ttsReady = r != TextToSpeech.LANG_MISSING_DATA && r != TextToSpeech.LANG_NOT_SUPPORTED;
+            if (ttsReady) {
+                tts.setSpeechRate(1.05f);
+                if (pendingSpeech != null) { tts.speak(pendingSpeech, TextToSpeech.QUEUE_FLUSH, null, "qf"); pendingSpeech = null; }
+            }
+        });
+    }
+
+    @PluginMethod
+    public void speak(PluginCall call) {
+        String text = call.getString("text");
+        if (text != null && !text.isEmpty()) {
+            ensureTts();
+            if (ttsReady) tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "qf");
+            else pendingSpeech = text;
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void stopSpeak(PluginCall call) {
+        pendingSpeech = null;
+        if (tts != null) tts.stop();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void canSpeak(PluginCall call) {
+        ensureTts();
+        JSObject r = new JSObject();
+        r.put("ok", true);
+        call.resolve(r);
     }
 
     /** Из MainActivity: приложение открыли по напоминанию. */

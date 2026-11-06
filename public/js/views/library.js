@@ -3,7 +3,7 @@ import { get } from '../api.js';
 import { h, icon, store } from '../ui.js';
 import { pageHead, whereTag } from '../components.js';
 
-const GROUP_ICON = { strength: 'dumbbell', speed: 'flame', ball: 'ball', recovery: 'moon' };
+const GROUP_ICON = { strength: 'dumbbell', speed: 'flame', ball: 'ball', box: 'glove', recovery: 'moon' };
 
 export async function render() {
   const { groups } = await get('/api/library');

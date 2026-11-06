@@ -1,6 +1,6 @@
 {
   "name": "quorfootball",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "QuorFootball: тренировки футболиста дома. План, питание, вода, таймер, уроки и отчёты",
   "private": true,
   "main": "server.js",

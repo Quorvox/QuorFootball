@@ -1,6 +1,6 @@
 // Тренировка по шагам: таймер, отдых между подходами, звук, отчёт в конце.
 import { get, upload } from '../api.js';
-import { h, svgEl, icon, ring, beep, buzz, fmtClock, localDate, toast } from '../ui.js';
+import { h, svgEl, icon, ring, beep, buzz, fmtClock, localDate, toast, store } from '../ui.js';
 import { exerciseDetail, exerciseTags } from '../components.js';
 
 const PHASE_LABEL = { warmup: 'Разминка', main: 'Основная часть', cooldown: 'Заминка' };
@@ -12,7 +12,7 @@ function buildSteps(list) {
   const steps = [{ type: 'ready', secs: 5, name: 'Приготовься', tip: 'Встань так, чтобы хватало места. Рядом вода.', next: list[0]?.name }];
   list.forEach((e, i) => {
     for (let s = 1; s <= e.sets; s++) {
-      steps.push({ type: 'work', name: e.name, tip: e.tip, data: e, load: e.load, phase: e.phase, set: s, sets: e.sets, ex: i, secs: e.kind === 'time' ? e.amount : null, reps: e.kind === 'reps' ? e.amount : null });
+      steps.push({ type: 'work', name: e.name, tip: e.tip, data: e, load: e.load, calls: e.calls, callGap: e.callGap, phase: e.phase, set: s, sets: e.sets, ex: i, secs: e.kind === 'time' ? e.amount : null, reps: e.kind === 'reps' ? e.amount : null });
       const lastSet = s === e.sets;
       const lastEx = i === list.length - 1;
       if (lastSet && lastEx) continue;
@@ -40,6 +40,31 @@ export async function render(ctx) {
   let wake = null;
   let urls = [];
 
+  // голос тренера: говорим название, раунды и серии на бое с тенью. Выключается кнопкой, выбор запоминается
+  let voiceOn = store.get('voice', true);
+  const nativeTts = globalThis.QF_LOCAL?.native ? globalThis.Capacitor?.Plugins?.QFReminders : null;
+  const hasVoice = Boolean(nativeTts) || (typeof speechSynthesis !== 'undefined' && typeof SpeechSynthesisUtterance !== 'undefined');
+  const silence = () => {
+    try { if (nativeTts) nativeTts.stopSpeak(); else if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel(); } catch { /* ничего */ }
+  };
+  const speak = (text) => {
+    if (!voiceOn || !hasVoice || !text) return;
+    if (nativeTts) { try { nativeTts.speak({ text }); } catch { /* нет речевого движка */ } return; }
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ru-RU';
+      u.rate = 1.05;
+      speechSynthesis.speak(u);
+    } catch { /* нет речевого движка */ }
+  };
+  let callQueue = [];
+  let callTimer = 0;
+  const nextCall = (s) => {
+    if (!callQueue.length) callQueue = [...s.calls].sort(() => Math.random() - 0.5);
+    return callQueue.pop();
+  };
+
   // каркас
   const phaseEl = h('span', { class: 'phase' });
   const counterEl = h('span', { class: 'phase' });
@@ -52,6 +77,7 @@ export async function render(ctx) {
     svgEl('circle', { cx: 188, cy: 188, r: 185, fill: 'none', stroke: '#333b40', 'stroke-width': 3 }),
     svgEl('path', { d: 'M0 188h20M356 188h20', stroke: '#333b40', 'stroke-width': 3 }));
   const nameEl = h('h2', { class: 'ex-name' });
+  const callEl = h('p', { class: 'call', 'aria-live': 'polite' });
   const subEl = h('p', { class: 'muted' });
   const tipEl = h('p', { class: 'tip' });
   const howEl = h('details', { class: 'how' }, h('summary', { text: 'Как делать' }));
@@ -59,13 +85,23 @@ export async function render(ctx) {
   howEl.append(howBody);
   const stage = h('div', { class: 'stage' },
     h('div', { class: 'pitch' }, lines, r.el, h('div', { class: 'center' }, timeEl, unitEl)),
-    nameEl, subEl, tipEl, howEl);
+    nameEl, callEl, subEl, tipEl, howEl);
 
   const pauseBtn = h('button', { class: 'btn', 'aria-label': 'Пауза', onclick: togglePause });
   const mainBtn = h('button', { class: 'btn primary big', onclick: () => advance() });
   const plusBtn = h('button', { class: 'btn', onclick: () => { remaining += 15; paint(); }, text: '+15 сек' });
   const controls = h('div', { class: 'controls' }, pauseBtn, mainBtn, plusBtn);
 
+  const voiceBtn = h('button', { class: 'btn quiet sm', type: 'button', hidden: !hasVoice || !steps.some((st) => st.calls), onclick: () => {
+    voiceOn = !voiceOn;
+    store.set('voice', voiceOn);
+    if (!voiceOn) silence();
+    paintVoice();
+  } });
+  const paintVoice = () => {
+    voiceBtn.replaceChildren(icon('volume', 18), voiceOn ? 'Голос' : 'Без голоса');
+    voiceBtn.setAttribute('aria-pressed', String(voiceOn));
+  };
   const closeBtn = h('button', {
     class: 'btn quiet sm', 'aria-label': 'Выйти из тренировки', onclick: () => {
       if (finished || confirm('Прервать тренировку? Прогресс не сохранится.')) ctx.go('workout/' + w.ref);
@@ -73,7 +109,7 @@ export async function render(ctx) {
   }, icon('x', 18));
 
   const root = h('div', { class: 'runner', role: 'dialog', 'aria-label': w.title },
-    h('div', { class: 'top' }, closeBtn, h('div', { class: 'grow' }, h('div', { class: 'num', style: { fontSize: '18px' }, text: w.title }), phaseEl), counterEl),
+    h('div', { class: 'top' }, closeBtn, h('div', { class: 'grow' }, h('div', { class: 'num', style: { fontSize: '18px' }, text: w.title }), phaseEl), voiceBtn, counterEl),
     h('div', { class: 'steps', 'aria-hidden': 'true' }, bars),
     stage, controls);
 
@@ -89,6 +125,7 @@ export async function render(ctx) {
     counterEl.textContent = s.type === 'ready' ? '' : `${Math.min(s.ex + 1, exCount)} / ${exCount}`;
     bars.forEach((b, k) => b.classList.toggle('on', s.type !== 'ready' && k <= s.ex));
     nameEl.textContent = s.name;
+    if (s.type !== 'work') callEl.textContent = '';
     if (s.type === 'work') {
       const parts = [s.sets > 1 ? `Подход ${s.set} из ${s.sets}` : '', s.load || ''].filter(Boolean);
       subEl.textContent = parts.join(', ');
@@ -126,6 +163,14 @@ export async function render(ctx) {
     // первый подход основной части: сразу показываем схему и шаги, чтобы не искать «Как делать»
     howEl.open = s.type === 'work' && s.set === 1 && s.phase === 'main';
     if (s.type === 'work') { beep(1040, 220); buzz(150); } else if (s.type === 'rest') { beep(520, 160); }
+    // голос: что делаем, какой раунд, дальше серии каждые несколько секунд
+    callQueue = [];
+    callEl.textContent = '';
+    if (s.type === 'work') {
+      callTimer = s.calls ? 2.5 : 0;
+      speak(s.sets > 1 && s.calls ? `${s.name}. Раунд ${s.set} из ${s.sets}` : s.name);
+    } else if (s.type === 'rest') speak(s.secs >= 20 ? 'Отдых. Дыши' : 'Отдых');
+    else speak('Приготовься');
     paint();
   }
 
@@ -150,6 +195,15 @@ export async function render(ctx) {
     elapsed += dt;
     const s = steps[i];
     if (s.secs == null) return;
+    if (s.type === 'work' && s.calls && remaining > 4) {
+      callTimer -= dt;
+      if (callTimer <= 0) {
+        const c = nextCall(s);
+        callEl.textContent = c;
+        speak(c);
+        callTimer = s.callGap || 6;
+      }
+    }
     remaining -= dt;
     const sec = Math.ceil(remaining);
     if (sec <= 3 && sec > 0 && sec !== lastBeep) { lastBeep = sec; beep(700, 80); }
@@ -163,6 +217,7 @@ export async function render(ctx) {
     finished = true;
     clearInterval(timer);
     beep(1200, 400); buzz([200, 100, 200]);
+    speak('Тренировка закончена');
     const rpeLabels = ['', 'очень легко', 'легко', 'легко', 'нормально', 'нормально', 'тяжеловато', 'тяжело', 'тяжело', 'на пределе', 'на пределе'];
     const rpe = h('input', { type: 'range', id: 'r-rpe', name: 'rpe', min: 1, max: 10, step: 1, value: 6 });
     const rpeText = h('span', { class: 'num', style: { fontSize: '20px' }, text: `6, ${rpeLabels[6]}` });
@@ -248,6 +303,7 @@ export async function render(ctx) {
   const timer = setInterval(tick, 100);
   ctx.onLeave(() => {
     clearInterval(timer);
+    silence();
     document.removeEventListener('visibilitychange', onVisible);
     document.removeEventListener('keydown', onKey);
     try { wake?.release(); } catch { /* уже отпущен */ }
@@ -256,6 +312,7 @@ export async function render(ctx) {
   });
 
   globalThis.QF_LOCAL?.reminders?.hold(w.slot);
+  paintVoice();
   enter();
   return root;
 }

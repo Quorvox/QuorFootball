@@ -2,7 +2,7 @@
 import { get, put } from '../api.js';
 import { h, toast } from '../ui.js';
 import { pageHead, backLink } from '../components.js';
-import { levelChoice, bodyFields, equipmentFields, goalChoice, positionChoice, readProfile } from '../forms.js';
+import { levelChoice, sportChoice, boxStyleChoice, bodyFields, equipmentFields, goalChoice, positionChoice, readProfile } from '../forms.js';
 
 export async function render(ctx) {
   const u = ctx.user;
@@ -23,6 +23,8 @@ export async function render(ctx) {
     },
   },
     h('section', { class: 'stack tight' }, h('h3', { text: 'Уровень' }), levelChoice(u.level)),
+    h('section', { class: 'stack tight' }, h('h3', { text: 'Что тренируешь' }), sportChoice(u.sport || 'football')),
+    h('section', { class: 'stack tight' }, h('h3', { text: 'Стиль бокса' }), boxStyleChoice(u.box_style || 'soviet'), h('p', { class: 'hint', text: 'Нужен, если выбрал бокс или «Футбол и бокс».' })),
     h('section', { class: 'stack tight' }, h('h3', { text: 'Оборудование' }), equipmentFields(catalog.equipment, u)),
     h('section', { class: 'stack tight' }, h('h3', { text: 'Данные' }), bodyFields(u)),
     h('section', { class: 'stack tight' }, h('h3', { text: 'Цель' }), goalChoice(u.goal)),

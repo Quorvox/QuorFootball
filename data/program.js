@@ -2,6 +2,10 @@
 // и не повторяется в этой тренировке. Последний вариант в слоте всегда без оборудования.
 const L = (novice, middle, pro) => ({ novice, middle, pro });
 const one = (...keys) => keys.map((k) => [k]);
+// бокс: общий набор по уровням плюс фирменные упражнения каждого стиля (sig = { стиль: [слоты] })
+const boxStyles = (base, sig) => Object.fromEntries(Object.keys(sig).map((st) => [st, {
+  novice: [...base.novice, ...sig[st]], middle: [...base.middle, ...sig[st]], pro: [...base.pro, ...sig[st]],
+}]));
 
 const SESSIONS = {
   LEGS: {
@@ -129,6 +133,86 @@ const SESSIONS = {
       [['scan_touch', 'blind_touch'], ['pressure_clock', 'shield_dribble'], ['first_touch_away', 'thigh_control'], ['wall_rondo', 'two_touch', 'cushion_pass'], ['croqueta', 'drag_push'], ['juggle_weak', 'knee_juggle']]
     ),
   },
+  // --- бокс: тренировки вечера. Набор упражнений зависит от выбранного стиля (byStyle) ---
+  BOX1: {
+    group: 'box',
+    title: 'Бокс: стойка и работа ног',
+    focus: 'Стойка, шаги, повороты, лёгкие подскоки и бой с тенью',
+    byStyle: boxStyles(
+      L(
+        [['box_stance'], ['box_stance_step'], ['box_pivot', 'box_bounce'], ['box_jab'], ['box_shadow']],
+        [['box_stance_step'], ['box_pivot'], ['box_bounce', 'rope_boxer'], ['box_jab', 'box_double_jab'], ['box_shadow']],
+        [['box_stance_step'], ['box_pivot'], ['rope_boxer', 'box_bounce'], ['box_jab_cross'], ['box_shadow']]
+      ),
+      { soviet: [['box_distance']], american: [['box_speed_hands']], mexican: [['box_pressure_walk']], cuban: [['box_angle_step']] }
+    ),
+  },
+  BOX2: {
+    group: 'box',
+    title: 'Бокс: удары и комбинации',
+    focus: 'Джеб, кросс, боковые и серии',
+    byStyle: boxStyles(
+      L(
+        [['box_stance'], ['box_jab'], ['box_cross'], ['box_jab_cross'], ['box_shadow']],
+        [['box_jab_cross'], ['box_hook'], ['box_hook_rear', 'box_uppercut'], ['box_one_two_hook'], ['bag_round', 'box_shadow']],
+        [['box_jab_cross'], ['box_hook', 'box_hook_rear'], ['box_uppercut'], ['box_combo_drill'], ['bag_round', 'box_shadow'], ['box_burst']]
+      ),
+      { soviet: [['box_double_jab']], american: [['box_speed_hands']], mexican: [['box_body_shot']], cuban: [['box_feint']] }
+    ),
+  },
+  BOX3: {
+    group: 'box',
+    title: 'Бокс: защита и контратаки',
+    focus: 'Блок, уклон, нырок и ответный удар',
+    byStyle: boxStyles(
+      L(
+        [['box_block'], ['box_slip'], ['box_parry'], ['box_shadow']],
+        [['box_block'], ['box_slip'], ['box_bob'], ['box_parry'], ['box_counter'], ['box_shadow']],
+        [['box_slip'], ['box_bob'], ['box_counter'], ['box_shoulder_roll', 'box_philly', 'box_block'], ['box_shadow']]
+      ),
+      { soviet: [['box_distance']], american: [['box_shoulder_roll']], mexican: [['box_body_shot']], cuban: [['box_angle_step']] }
+    ),
+  },
+  // дальше тренировки только из каталога, в расписание недели не входят (кроме BOX6: утро бойца вместо «Скорости»)
+  BOX4: {
+    group: 'box',
+    title: 'Бокс: мешок',
+    focus: 'Удары по мешку: джеб, двойка, серии и раунд. Нужны мешок, перчатки и бинты',
+    byStyle: boxStyles(
+      L(
+        [['bag_jab'], ['bag_one_two'], ['bag_combo', 'bag_one_two'], ['bag_round', 'bag_jab']],
+        [['bag_jab'], ['bag_one_two'], ['bag_combo'], ['bag_round']],
+        [['bag_one_two'], ['bag_combo'], ['bag_round'], ['box_burst']]
+      ),
+      { soviet: [['bag_move']], american: [['box_speed_hands']], mexican: [['bag_body']], cuban: [['bag_move']] }
+    ),
+  },
+  BOX5: {
+    group: 'box',
+    title: 'Бокс: раунды с тенью',
+    focus: 'Бой с тенью раундами: тренер подсказывает серии голосом',
+    byStyle: boxStyles(
+      L(
+        [['box_stance'], ['box_shadow'], ['box_mirror'], ['box_burst']],
+        [['box_stance_step'], ['box_shadow'], ['box_combo_drill'], ['box_burst']],
+        [['box_stance_step'], ['box_shadow'], ['box_combo_drill'], ['box_mirror'], ['box_burst']]
+      ),
+      { soviet: [['box_distance']], american: [['box_speed_hands']], mexican: [['box_pressure_walk']], cuban: [['box_feint']] }
+    ),
+  },
+  BOX6: {
+    group: 'box',
+    title: 'Бокс: скакалка и ОФП',
+    focus: 'Ноги, дыхание и сила бойца: скакалка, интервалы, приседы с ударами',
+    byStyle: boxStyles(
+      L(
+        [['rope_boxer', 'box_bounce', 'high_knees'], ['box_squat_punch'], ['box_roadwork', 'fast_feet'], ['box_burst'], ['plank']],
+        [['rope_boxer', 'box_bounce', 'high_knees'], ['box_squat_punch'], ['box_roadwork', 'fast_feet'], ['box_burst'], ['burpees', 'mountain'], ['plank']],
+        [['rope_boxer', 'box_bounce', 'high_knees'], ['box_squat_punch'], ['box_roadwork', 'fast_feet'], ['box_burst'], ['burpees', 'mountain'], ['plank'], ['side_plank', 'hollow_hold']]
+      ),
+      { soviet: [], american: [], mexican: [], cuban: [] }
+    ),
+  },
   REC: {
     group: 'recovery',
     title: 'Восстановление',
@@ -162,13 +246,17 @@ const SESSION_GROUPS = [
   { key: 'strength', label: 'Сила', text: 'Ноги, верх тела, пресс и кор' },
   { key: 'speed', label: 'Скорость', text: 'Ловкость, смена направления, выносливость' },
   { key: 'ball', label: 'С мячом', text: 'Чеканка, дриблинг, финты, футзал, игра под давлением' },
+  { key: 'box', label: 'Бокс', text: 'Стойка, удары, защита, мешок и бой с тенью' },
   { key: 'recovery', label: 'Восстановление', text: 'Мобильность и лёгкая растяжка' },
 ];
 
 const WARM = ['jog', 'arm_circles', 'leg_swings', 'hip_mob', 'sl_balance'];
 const WARM_BALL = ['jog', 'leg_swings', 'hip_mob', 'sl_balance'];
+const WARM_BOX = ['jog', 'arm_circles', 'leg_swings', 'hip_mob'];
 const COOL = ['quad_stretch', 'hams_stretch', 'calf_stretch'];
+// нет мешка и места: бой с тенью и защита без снаряда
+const BOX_FALLBACK = ['box_stance_step', 'box_jab_cross', 'box_slip', 'box_shadow', 'box_burst'];
 // если мяча нет, вечер заменяем работой без него
 const NO_BALL = ['fast_feet', 'shuffle', 'skater', 'high_knees', 'glute_bridge'];
 
-module.exports = { SESSION_GROUPS, SESSIONS, SCHEDULE, WARM, WARM_BALL, COOL, NO_BALL };
+module.exports = { SESSION_GROUPS, SESSIONS, SCHEDULE, WARM, WARM_BALL, WARM_BOX, COOL, NO_BALL, BOX_FALLBACK };

@@ -18,9 +18,22 @@ export const POSITION_OPTIONS = [
   { value: 'mid', title: 'Полузащитник' },
   { value: 'fwd', title: 'Нападающий' },
 ];
+export const SPORT_OPTIONS = [
+  { value: 'football', title: 'Футбол', text: 'Утром сила и скорость, вечером мяч.' },
+  { value: 'boxing', title: 'Бокс', text: 'Утром сила и скакалка, вечером бокс: стойка, удары, защита.' },
+  { value: 'both', title: 'Футбол и бокс', text: 'Вечерние тренировки чередуются: мяч, потом бокс.' },
+];
+export const BOX_STYLE_OPTIONS = [
+  { value: 'soviet', title: 'Советская школа', text: 'Техника и дистанция. Сильный джеб, чёткие ноги, высокая охрана.' },
+  { value: 'american', title: 'Американская школа', text: 'Скорость и ритм. Быстрые руки, подвижность, защита плечом.' },
+  { value: 'mexican', title: 'Мексиканская школа', text: 'Давление и корпус. Плотная охрана, боковые, шаг вперёд.' },
+  { value: 'cuban', title: 'Кубинская школа', text: 'Угол и обман. Лёгкие ноги, ложные движения, уходы с линии.' },
+];
 const DUMBBELL_KG = [2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32];
 
 export const levelChoice = (v) => choiceGroup('level', LEVEL_OPTIONS, v);
+export const sportChoice = (v) => choiceGroup('sport', SPORT_OPTIONS, v);
+export const boxStyleChoice = (v) => choiceGroup('box_style', BOX_STYLE_OPTIONS, v);
 export const goalChoice = (v) => choiceGroup('goal', GOAL_OPTIONS, v);
 export const positionChoice = (v) => choiceGroup('position', POSITION_OPTIONS, v, { two: true });
 
@@ -69,6 +82,8 @@ export function readProfile(root) {
     level: checked(root, 'level'),
     goal: checked(root, 'goal'),
     position: checked(root, 'position'),
+    sport: checked(root, 'sport'),
+    box_style: checked(root, 'box_style'),
     equipment: eq ? [...eq.querySelectorAll('input[name=equipment]:checked')].map((i) => i.value) : undefined,
     dumbbell_kg: eq ? Number(eq.querySelector('[name=dumbbell_kg]')?.value) || null : undefined,
   };

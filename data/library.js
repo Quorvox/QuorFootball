@@ -13,6 +13,8 @@ const EQUIPMENT = [
   { id: 'rope', label: 'Скакалка' },
   { id: 'chair', label: 'Устойчивый стул или диван', hint: 'Для отжиманий с опорой и выпадов' },
   { id: 'cones', label: 'Конусы или бутылки', hint: 'Для слалома и челночного бега' },
+  { id: 'bag', label: 'Боксёрский мешок или груша', hint: 'Для тренировок на мешке. Нет, заменим боем с тенью' },
+  { id: 'gloves', label: 'Перчатки и бинты', hint: 'Для мешка обязательны, чтобы не повредить кисти' },
   { id: 'tight', label: 'Очень тесно: около 1×1 м', hint: 'Оставим только упражнения на месте, без ходьбы и пасов на расстояние' },
 ];
 
@@ -23,6 +25,7 @@ const GROUPS = [
   { key: 'core', label: 'Пресс и кор' },
   { key: 'speed', label: 'Скорость и кардио' },
   { key: 'ball', label: 'С мячом' },
+  { key: 'box', label: 'Бокс' },
   { key: 'mobility', label: 'Разминка и растяжка' },
 ];
 
@@ -31,6 +34,7 @@ const E = (key, name, group, kind, base, tip, steps, o = {}) => ({
   key, name, group, kind, base, tip, steps,
   needs: o.needs || [], mistakes: o.mistakes || [], fig: o.fig || null, loud: Boolean(o.loud),
   space: o.space || null, cat: o.cat || null, school: o.school || null, why: o.why || null, pressure: o.pressure || null, lvl: o.lvl || 'novice',
+  styles: o.styles || null, calls: Boolean(o.calls), video: o.video || null,
 });
 
 // разделы школы мяча
@@ -292,6 +296,7 @@ const LIST = [
 ];
 
 LIST.push(...require('./drills')(E));
+LIST.push(...require('./boxing').exercises(E));
 
 // раскладка старых упражнений по разделам и по тому, сколько места нужно
 const mark = (field, value, keys) => keys.forEach((k) => { const e = LIST.find((x) => x.key === k); if (e) e[field] = value; });
@@ -307,4 +312,4 @@ mark('space', 'big', ['wall_pass', 'instep_wall', 'first_touch_wall', 'gate_pass
 
 const LIB = Object.fromEntries(LIST.map((e) => [e.key, e]));
 
-module.exports = { LIB, LIST, GROUPS, EQUIPMENT, BALL_CATS };
+module.exports = { LIB, LIST, GROUPS, EQUIPMENT, BALL_CATS, BOX_CATS: require('./boxing').BOX_CATS };
